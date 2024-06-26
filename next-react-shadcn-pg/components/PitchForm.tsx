@@ -18,7 +18,7 @@ import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "./ui/radio-group";
 import { addDoc, collection, getDocs } from "firebase/firestore";
 import { db } from "@/firebase/clientApp";
-import { useEffect } from "react";
+
 
 const formSchema = z.object({
 	pitcher: z.string().min(2, {
