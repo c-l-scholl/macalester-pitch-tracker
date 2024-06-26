@@ -54,7 +54,7 @@ export function PitchForm() {
 	}
 
 	return (
-		<div className="fixed flex flex-col gap-2 w-[200px] min-w-[200px] border-r min-h-screen p-4">
+		<div className="flex gap-2 w-[200px] min-w-[200px] border-r min-h-screen p-4">
 			<Form {...form}>
 				<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
 					<FormField

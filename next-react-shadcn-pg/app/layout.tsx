@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { Auth } from "@/components/auth";
 import Header from "@/components/header";
+import { FSData } from "@/components/FSData";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -20,6 +21,7 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <Header/>
+        <FSData/>
         {children}
       </body>
     </html>
