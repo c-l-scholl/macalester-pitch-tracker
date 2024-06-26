@@ -16,6 +16,9 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "./ui/radio-group";
+import { addDoc, collection, getDocs } from "firebase/firestore";
+import { db } from "@/firebase/clientApp";
+import { useEffect } from "react";
 
 const formSchema = z.object({
 	pitcher: z.string().min(2, {
@@ -34,6 +37,7 @@ const formSchema = z.object({
 });
 
 export function PitchForm() {
+
 	// 1. Define your form.
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
@@ -47,10 +51,50 @@ export function PitchForm() {
 	});
 
 	// 2. Define a submit handler.
-	function onSubmit(values: z.infer<typeof formSchema>) {
+	async function onSubmit(values: z.infer<typeof formSchema>) {
 		// Do something with the form values.
 		// ✅ This will be type-safe and validated.
-		console.log(values);
+		interface Pitcher {
+			email: string;
+			gradYear: number;
+			id: string;
+			pitcherName: string;
+		}
+
+		let currentPitcher: Pitcher = {
+			email: "",
+			gradYear: 0,
+			id: "",
+			pitcherName: "",
+		};
+
+		if (currentPitcher.pitcherName !== values.pitcher) {
+
+			const pitcherCollRef = collection(db, "pitcher");
+			const data = await getDocs(pitcherCollRef);
+
+			const filteredData = data.docs.map((doc) => ({
+				...doc.data(),
+				id: doc.id,
+			})) as Pitcher[];
+			filteredData.forEach((element) => {
+				if (element.pitcherName === values.pitcher) {
+					currentPitcher = element;
+				}
+			});
+		}
+
+    const pitchCollRef = collection(
+      db,
+      "pitcher/" + currentPitcher.id + "/pitches"
+    );
+
+		await addDoc(pitchCollRef, {
+			batterHand: values.batterHand,
+			contact: values.contact,
+			pitchType: values.pitchType,
+			velocity: values.velocity,
+		});
 	}
 
 	return (
@@ -109,7 +153,14 @@ export function PitchForm() {
 							<FormItem>
 								<FormLabel>Velocity</FormLabel>
 								<FormControl>
-									<Input type="number" min={50} max={110} placeholder="In mph" {...field} onChange={event => field.onChange(+event.target.value)}/>
+									<Input
+										type="number"
+                    min={50}
+										max={110}
+										placeholder="In mph"
+										{...field}
+										onChange={(event) => field.onChange(+event.target.value)}
+									/>
 								</FormControl>
 								<FormMessage />
 							</FormItem>

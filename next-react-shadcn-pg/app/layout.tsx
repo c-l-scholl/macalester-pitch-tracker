@@ -21,7 +21,6 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <Header/>
-        <FSData/>
         {children}
       </body>
     </html>

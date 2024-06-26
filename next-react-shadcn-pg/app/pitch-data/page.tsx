@@ -6,40 +6,40 @@ import { db } from "@/firebase/clientApp";
 import { getDocs, collection } from "firebase/firestore";
 
 async function getPitches(): Promise<Pitch[]> {
+  // needs to be expanded to take specific pitcher 
+  // maybe a component above the form and this page that gets the pitcher
 	interface Pitcher {
 		email: string;
-		firstName: string;
 		gradYear: number;
 		id: string;
-		lastName: string;
+		pitcherName: string;
 	}
 	// Fetch data from your API here.
 	const pitcherCollRef = collection(db, "pitcher");
 	const data = await getDocs(pitcherCollRef);
+
 	const filteredData = data.docs.map((doc) => ({
 		...doc.data(),
 		id: doc.id,
 	})) as Pitcher[];
+
 	const pitchCollRef = collection(
 		db,
 		"pitcher/" + filteredData[0].id + "/pitches"
 	);
 	const pitchData = await getDocs(pitchCollRef);
-  const pitcherName = filteredData[0].firstName + " " + filteredData[0].lastName;
-	const filteredPitchData = pitchData.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
 
-	const fullPitchData = filteredPitchData.map((pitch) => ({...pitch, pitcherName: pitcherName})) as Pitch[];
-  return fullPitchData;
-	// return [
-	// 	{
-	// 		id: "728ed52f",
-	// 		pitcherName: "Camden Scholl",
-	// 		batterHand: "L",
-	// 		contact: "Strike",
-	// 		velocity: 82,
-	// 		pitchType: "FB",
-	// 	},
-	// ];
+	const filteredPitchData = pitchData.docs.map((doc) => ({
+		...doc.data(),
+		id: doc.id,
+	}));
+
+	const fullPitchData = filteredPitchData.map((pitch) => ({
+		...pitch,
+		pitcherName: filteredData[0].pitcherName,
+	})) as Pitch[];
+
+	return fullPitchData;
 }
 
 export default async function Page() {
