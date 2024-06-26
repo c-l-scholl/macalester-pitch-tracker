@@ -1,10 +1,12 @@
 "use client";
 
+import { Auth } from "./auth";
+
 
 export default function Header() {
 	return (
-		<div className="flex gap-4 min-w-[300px] p-4 border-b">
-			
+		<div className="flex items-right gap-2 min-w-[300px] p-2 border-b">
+			<Auth/>
 		</div>
 	);
 }

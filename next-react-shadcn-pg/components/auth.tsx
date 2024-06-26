@@ -1,9 +1,7 @@
 "use client";
 
-import { auth, googleProvider } from "@/firebase/clientApp"
-import { createUserWithEmailAndPassword, signInWithPopup, signOut } from "firebase/auth"
-import { useState } from 'react';
-import { Input } from "./ui/input"
+import { auth, googleProvider } from "@/firebase/clientApp";
+import { signInWithPopup, signOut } from "firebase/auth";
 import { Button } from "./ui/button";
 
 export const Auth = () => {
@@ -25,7 +23,7 @@ export const Auth = () => {
   }
 
 	return (
-    <div className="flex flex-row p-4 w-[200px] items-center gap-2">
+    <div className="flex flex-row p-4 w-[200px] items-right gap-2">
       <Button onClick={signInWithGoogle}>Sign In With Google</Button>
       <Button onClick={logout}>Logout</Button>
     </div>
