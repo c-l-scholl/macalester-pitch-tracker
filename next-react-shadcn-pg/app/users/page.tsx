@@ -9,6 +9,7 @@ async function getUsers(): Promise<Pitch[]> {
     {
       id: "728ed52f",
       pitcherName: "Camden Scholl",
+	  batterHand: "L",
       contact: "Strike",
       velocity: 82,
 	  pitchType: "FB"

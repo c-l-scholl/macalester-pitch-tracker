@@ -7,6 +7,7 @@ import { ColumnDef } from "@tanstack/react-table"
 export type Pitch = {
   id: string
   pitcherName: string
+  batterHand: "L" | "R"
   contact: "Ball" | "Strike" | "Foul" | "H" | "2B" | "3B" | "HR"
   velocity: number
   pitchType: "FB" | "2S" | "CH" | "CB" | "SL" | "Other"
@@ -16,6 +17,10 @@ export const columns: ColumnDef<Pitch>[] = [
   {
     accessorKey: "pitcherName",
     header: "Pitcher",
+  },
+  {
+	accessorKey: "batterHand",
+	header: "Batter Handedness"
   },
   {
     accessorKey: "contact",
