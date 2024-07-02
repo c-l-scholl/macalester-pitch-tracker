@@ -1,5 +1,6 @@
 "use client";
 
+import { Button, buttonVariants } from "@/components/ui/button";
 import { db } from "@/firebase/clientApp";
 import {
 	QueryDocumentSnapshot,
@@ -7,6 +8,9 @@ import {
 	collection,
 	Timestamp,
 	addDoc,
+	deleteDoc,
+	updateDoc,
+	doc,
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
 
@@ -29,6 +33,9 @@ export const SimpleTrack = () => {
 	const [pitchVelocity, setPitchVelocity] = useState<number>(50);
 	const [pitchType, setPitchType] = useState<string>("FB");
 	const [pitchResult, setPitchResult] = useState<string>("Strike");
+
+	// Update pitchType state
+	const [updatedPitchType, setUpdatedPitchType] = useState<string>("FB");
 
 	const getPitchesList = async () => {
 		try {
@@ -60,11 +67,25 @@ export const SimpleTrack = () => {
 		}
 	};
 
+	const deletePitch = async (id?: string) => {
+		if (id != undefined) {
+			const pitchDocToDelete = doc(db, "pitches", id);
+			await deleteDoc(pitchDocToDelete);
+			getPitchesList();
+		}
+	};
+
+	const updatePitchType = async (id?: string) => {
+		if (id != undefined) {
+			const pitchDocToChange = doc(db, "pitches", id);
+			await updateDoc(pitchDocToChange, { pitchType: updatedPitchType });
+      getPitchesList();
+		}
+	};
+
 	const pitchesCollRef = collection(db, "pitches");
 
 	useEffect(() => {
-		//why no work when getPitches outside useEffect
-
 		getPitchesList();
 	}, []);
 
@@ -101,25 +122,37 @@ export const SimpleTrack = () => {
 					type="string"
 					onChange={(e) => setPitchResult(e.target.value)}
 				/>
-				<button
-					className="w-[100px] border bg-black text-white rounded-md p-2"
-					type="submit"
-					onClick={onSubmitPitch}
-				>
+				<Button type="submit" onClick={onSubmitPitch}>
 					Submit
-				</button>
+				</Button>
 			</div>
 			<div className="p-4">
 				<h1 className="mb-4">Pitch Data</h1>
 				<div className="flex-col">
 					{pitchesList?.map((pitch) => (
-						<div className="flex flex-row g-2 p-2 border-2" key={pitch.id}>
-							<p className="p-1">{pitch.fullName}</p>
-							<p className="p-1">{pitch.pitchDate.toDate().toDateString()}</p>
-							<p className="p-1">{pitch.batterHand}</p>
-							<p className="p-1">{pitch.pitchType}</p>
-							<p className="p-1">{pitch.velocity}</p>
-							<p className="p-1">{pitch.result}</p>
+						<div
+							className="flex flex-row gap-2 p-2 border-2"
+							key={pitch.id}
+						>
+							<p>{pitch.fullName}</p>
+							<p>{`${pitch.pitchDate.toDate().getMonth()}/${pitch.pitchDate.toDate().getDate()}/${pitch.pitchDate.toDate().getFullYear()}`}</p>
+							<p>{pitch.batterHand}</p>
+							<p>{pitch.pitchType}</p>
+							<p>{pitch.velocity}</p>
+							<p>{pitch.result}</p>
+							<Button
+								variant="destructive"
+								onClick={() => deletePitch(pitch.id)}
+							>
+								Delete
+							</Button>
+							<input
+								placeholder="change pitch..."
+								onChange={(e) => setUpdatedPitchType(e.target.value)}
+							/>
+							<Button variant="outline" onClick={() => updatePitchType(pitch.id)}>
+								Update title
+							</Button>
 						</div>
 					))}
 				</div>
