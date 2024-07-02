@@ -19,21 +19,22 @@ export const SimpleTrack = () => {
 
 	const pitchesCollRef = collection(db, "pitches");
 
+  const getPitchesList = async () => {
+    try {
+      const data = await getDocs(pitchesCollRef);
+      const filteredData = data.docs.map((doc: QueryDocumentSnapshot) => ({
+        ...doc.data(),
+        id: doc.id,
+      })) as Pitch[];
+      setPitchesList(filteredData);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
 	useEffect(() => {
-		const getPitchesList = async () => {
-			try {
-				const data = await getDocs(pitchesCollRef);
-				const filteredData = data.docs.map((doc: QueryDocumentSnapshot) => ({
-					...doc.data(),
-					id: doc.id,
-				})) as Pitch[];
-				setPitchesList(filteredData);
-			} catch (err) {
-				console.error(err);
-			}
-		};
 		getPitchesList();
-	}, []);
+	});
 
 	return (
 		<div className="flex flex-col">
