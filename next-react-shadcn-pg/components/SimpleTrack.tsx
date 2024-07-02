@@ -12,7 +12,7 @@ import {
 	updateDoc,
 	doc,
 } from "firebase/firestore";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 
 export const SimpleTrack = () => {
 	interface Pitch {
@@ -79,11 +79,11 @@ export const SimpleTrack = () => {
 		if (id != undefined) {
 			const pitchDocToChange = doc(db, "pitches", id);
 			await updateDoc(pitchDocToChange, { pitchType: updatedPitchType });
-      getPitchesList();
+			getPitchesList();
 		}
 	};
 
-	const pitchesCollRef = collection(db, "pitches");
+	const pitchesCollRef = useMemo(() => collection(db, "pitches"), []);
 
 	useEffect(() => {
 		getPitchesList();
@@ -130,10 +130,7 @@ export const SimpleTrack = () => {
 				<h1 className="mb-4">Pitch Data</h1>
 				<div className="flex-col">
 					{pitchesList?.map((pitch) => (
-						<div
-							className="flex flex-row gap-2 p-2 border-2"
-							key={pitch.id}
-						>
+						<div className="flex flex-row gap-2 p-2 border-2" key={pitch.id}>
 							<p>{pitch.fullName}</p>
 							<p>{`${pitch.pitchDate.toDate().getMonth()}/${pitch.pitchDate.toDate().getDate()}/${pitch.pitchDate.toDate().getFullYear()}`}</p>
 							<p>{pitch.batterHand}</p>
@@ -150,8 +147,12 @@ export const SimpleTrack = () => {
 								placeholder="change pitch..."
 								onChange={(e) => setUpdatedPitchType(e.target.value)}
 							/>
-							<Button variant="outline" onClick={() => updatePitchType(pitch.id)}>
-								Update title
+              {/* maybe use a shadcn dialogue box to help with editing */}
+							<Button
+								variant="outline"
+								onClick={() => updatePitchType(pitch.id)}
+							>
+								Update Pitch Type
 							</Button>
 						</div>
 					))}
