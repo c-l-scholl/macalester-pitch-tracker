@@ -11,6 +11,8 @@ import {
 	deleteDoc,
 	updateDoc,
 	doc,
+  query,
+  orderBy,
 } from "firebase/firestore";
 import { useEffect, useState, useMemo } from "react";
 
@@ -38,16 +40,17 @@ export const SimpleTrack = () => {
 	const [updatedPitchType, setUpdatedPitchType] = useState<string>("FB");
 
 	const getPitchesList = async () => {
-		try {
-			const data = await getDocs(pitchesCollRef);
+    try {
+      const q = query(pitchesCollRef, orderBy("pitchDate", "desc"));
+      const data = await getDocs(q);
 			const filteredData = data.docs.map((doc: QueryDocumentSnapshot) => ({
 				...doc.data(),
 				id: doc.id,
 			})) as Pitch[];
 			setPitchesList(filteredData);
-		} catch (err) {
-			console.error(err);
-		}
+    } catch (err) {
+      console.error(err);
+    }
 	};
 
 	const onSubmitPitch = async () => {
@@ -83,7 +86,7 @@ export const SimpleTrack = () => {
 		}
 	};
 
-	const pitchesCollRef = useMemo(() => collection(db, "pitches"), []);
+	const pitchesCollRef = collection(db, "pitches");
 
 	useEffect(() => {
 		getPitchesList();
