@@ -5,43 +5,25 @@ import { PitchForm } from "@/components/PitchForm";
 import { Pitch, columns } from "./columns";
 import { DataTable } from "@/components/data-table";
 import { db } from "@/firebase/clientApp";
-import { getDocs, collection } from "firebase/firestore";
+import {
+	getDocs,
+	collection,
+	query,
+	QueryDocumentSnapshot,
+	orderBy,
+} from "firebase/firestore";
 
 async function getPitches(): Promise<Pitch[]> {
 	// needs to be expanded to take specific pitcher
 	// maybe a component above the form and this page that gets the pitcher
-	interface Pitcher {
-		email: string;
-		gradYear: number;
-		id: string;
-		pitcherName: string;
-	}
-	// Fetch data from your API here.
-	const pitcherCollRef = collection(db, "pitcher");
-	const data = await getDocs(pitcherCollRef);
-
-	const filteredData = data.docs.map((doc) => ({
+	const pitchesCollRef = collection(db, "pitches");
+	const q = query(pitchesCollRef, orderBy("pitchDate", "desc"));
+	const data = await getDocs(q);
+	const filteredData = data.docs.map((doc: QueryDocumentSnapshot) => ({
 		...doc.data(),
 		id: doc.id,
-	})) as Pitcher[];
-
-	const pitchCollRef = collection(
-		db,
-		"pitcher/" + filteredData[0].id + "/pitches"
-	);
-	const pitchData = await getDocs(pitchCollRef);
-
-	const filteredPitchData = pitchData.docs.map((doc) => ({
-		...doc.data(),
-		id: doc.id,
-	}));
-
-	const fullPitchData = filteredPitchData.map((pitch) => ({
-		...pitch,
-		pitcherName: filteredData[0].pitcherName,
 	})) as Pitch[];
-
-	return fullPitchData;
+	return filteredData;
 }
 
 export default function PitchTracker() {
@@ -54,7 +36,7 @@ export default function PitchTracker() {
 		};
 
 		getPitchData();
-	});
+	}, []);
 
 	return (
 		<div className="flex flex-row">

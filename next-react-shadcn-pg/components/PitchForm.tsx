@@ -16,8 +16,9 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "./ui/radio-group";
-import { addDoc, collection, getDocs } from "firebase/firestore";
+import { Timestamp, addDoc, collection, getDocs } from "firebase/firestore";
 import { db } from "@/firebase/clientApp";
+import { auth } from "@/firebase/clientApp";
 
 
 const formSchema = z.object({
@@ -36,7 +37,7 @@ const formSchema = z.object({
 	}),
 });
 
-export function PitchForm() {
+export const PitchForm = () => {
 
 	// 1. Define your form.
 	const form = useForm<z.infer<typeof formSchema>>({
@@ -54,47 +55,32 @@ export function PitchForm() {
 	async function onSubmit(values: z.infer<typeof formSchema>) {
 		// Do something with the form values.
 		// ✅ This will be type-safe and validated.
-		interface Pitcher {
-			email: string;
-			gradYear: number;
-			id: string;
-			pitcherName: string;
+		interface Pitch {
+			fullName: string;
+			pitchDate: Timestamp;
+			batterHand: string;
+			pitchType: string;
+			velocity: number;
+			result: string;
+			id?: string;
 		}
 
-		let currentPitcher: Pitcher = {
-			email: "",
-			gradYear: 0,
-			id: "",
-			pitcherName: "",
-		};
+		const pitchesCollRef = collection(db, "pitches");
 
-		if (currentPitcher.pitcherName !== values.pitcher) {
-
-			const pitcherCollRef = collection(db, "pitcher");
-			const data = await getDocs(pitcherCollRef);
-
-			const filteredData = data.docs.map((doc) => ({
-				...doc.data(),
-				id: doc.id,
-			})) as Pitcher[];
-			filteredData.forEach((element) => {
-				if (element.pitcherName === values.pitcher) {
-					currentPitcher = element;
-				}
+		try {
+			await addDoc(pitchesCollRef, {
+				batterHand: values.batterHand,
+				fullName: values.pitcher,
+				pitchDate: Timestamp.fromDate(new Date()),
+				pitchType: values.pitchType,
+				velocity: values.velocity,
+				result: values.contact,
+				// now there is user connected with each pitch
+				userId: auth?.currentUser?.uid
 			});
+		} catch (err) {
+			console.error(err);
 		}
-
-    const pitchCollRef = collection(
-      db,
-      "pitcher/" + currentPitcher.id + "/pitches"
-    );
-
-		await addDoc(pitchCollRef, {
-			batterHand: values.batterHand,
-			contact: values.contact,
-			pitchType: values.pitchType,
-			velocity: values.velocity,
-		});
 	}
 
 	return (
