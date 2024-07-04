@@ -19,6 +19,8 @@ import { RadioGroup, RadioGroupItem } from "./ui/radio-group";
 import { Timestamp, addDoc, collection, getDocs } from "firebase/firestore";
 import { db } from "@/firebase/clientApp";
 import { auth } from "@/firebase/clientApp";
+import { Dispatch, SetStateAction } from "react";
+import TrackerState from "./Tracker.state";
 
 
 const formSchema = z.object({
@@ -37,8 +39,11 @@ const formSchema = z.object({
 	}),
 });
 
-export const PitchForm = () => {
+interface PitchFormProps {
+}
 
+export const PitchForm = () => {
+	const { isLoading, setIsLoading } = TrackerState.useContainer();
 	// 1. Define your form.
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
@@ -66,7 +71,7 @@ export const PitchForm = () => {
 		}
 
 		const pitchesCollRef = collection(db, "pitches");
-
+		setIsLoading(true);
 		try {
 			await addDoc(pitchesCollRef, {
 				batterHand: values.batterHand,
@@ -76,12 +81,15 @@ export const PitchForm = () => {
 				velocity: values.velocity,
 				result: values.contact,
 				// now there is user connected with each pitch
-				userId: auth?.currentUser?.uid
+				// userId: auth?.currentUser?.uid
 			});
 		} catch (err) {
 			console.error(err);
+			setIsLoading(false);
 		}
 	}
+
+	
 
 	return (
 		<div className="flex gap-2 w-[200px] min-w-[200px] border-r min-h-screen p-4">
@@ -114,7 +122,7 @@ export const PitchForm = () => {
 									>
 										<FormItem className="flex items-center space-x-3 space-y-0">
 											<FormControl>
-												<RadioGroupItem value="R" />
+												<RadioGroupItem value="Right" />
 											</FormControl>
 											<FormLabel className="font-normal">
 												Right-Handed
@@ -122,7 +130,7 @@ export const PitchForm = () => {
 										</FormItem>
 										<FormItem className="flex items-center space-x-3 space-y-0">
 											<FormControl>
-												<RadioGroupItem value="L" />
+												<RadioGroupItem value="Left" />
 											</FormControl>
 											<FormLabel className="font-normal">Left-Handed</FormLabel>
 										</FormItem>

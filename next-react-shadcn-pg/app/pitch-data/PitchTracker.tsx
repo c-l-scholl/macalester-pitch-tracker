@@ -12,6 +12,7 @@ import {
 	QueryDocumentSnapshot,
 	orderBy,
 } from "firebase/firestore";
+import TrackerState from "@/components/Tracker.state";
 
 async function getPitches(): Promise<Pitch[]> {
 	// needs to be expanded to take specific pitcher
@@ -27,16 +28,18 @@ async function getPitches(): Promise<Pitch[]> {
 }
 
 export default function PitchTracker() {
+	const { isLoading, setIsLoading } = TrackerState.useContainer();
 	const [pitchData, setPitchData] = useState<Pitch[]>([]);
 
 	useEffect(() => {
 		const getPitchData = async () => {
 			const data = await getPitches();
 			setPitchData(data);
+			setIsLoading(false);
 		};
 
 		getPitchData();
-	}, []);
+	}, [isLoading]);
 
 	return (
 		<div className="flex flex-row">
