@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useState, useContext, createContext, useEffect } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { PitchForm } from "@/components/PitchForm";
-import { Pitch, columns } from "./columns";
+import { Pitch, getPitchColumns } from "./columns";
 import { DataTable } from "@/components/data-table";
 import { db } from "@/firebase/clientApp";
 import {
@@ -11,8 +11,10 @@ import {
 	query,
 	QueryDocumentSnapshot,
 	orderBy,
+  deleteDoc,
+  doc,
 } from "firebase/firestore";
-import TrackerState from "@/components/Tracker.state";
+// import TrackerState from "@/components/Tracker.state";
 
 async function getPitches(): Promise<Pitch[]> {
 	// needs to be expanded to take specific pitcher
@@ -28,8 +30,29 @@ async function getPitches(): Promise<Pitch[]> {
 }
 
 export default function PitchTracker() {
-	const { isLoading, setIsLoading } = TrackerState.useContainer();
+	const [isLoading, setIsLoading] = useState<boolean>(false);
 	const [pitchData, setPitchData] = useState<Pitch[]>([]);
+
+
+  // const onDelete = useCallback(async (pitch: Pitch) => {
+  //   setIsLoading(true);
+  //   if (pitch.id != undefined) {
+  //     const pitchDocToDelete = doc(db, "pitches", pitch.id);
+  //     await deleteDoc(pitchDocToDelete);
+  //   }
+  // }, []);
+
+  const onDelete = async (pitch: Pitch) => {
+    setIsLoading(true);
+    if (pitch.id != undefined) {
+      const pitchDocToDelete = doc(db, "pitches", pitch.id);
+      await deleteDoc(pitchDocToDelete);
+    }
+  }
+
+  const onEdit = useCallback((pitch: Pitch) => alert(`On edit pressed for pitch with id ${pitch.id}`), []);
+
+  const columns = getPitchColumns({ onEdit, onDelete });
 
 	useEffect(() => {
 		const getPitchData = async () => {
@@ -47,7 +70,9 @@ export default function PitchTracker() {
 
 			<div className="p-4">
 				<h1 className="text-3xl font-bold mb-2">Pitch Data</h1>
-				<DataTable columns={columns} data={pitchData} />
+        {/*isLoading && <span>Loading</span>*/}
+				{/* {!isLoading && <DataTable columns={columns} data={pitchData} />} */}
+        <DataTable columns={columns} data={pitchData}/>
 			</div>
 		</div>
 	);

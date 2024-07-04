@@ -27,7 +27,7 @@ const formSchema = z.object({
 	pitcher: z.string().min(2, {
 		message: "Username must be at least 2 characters.",
 	}),
-	batterHand: z.enum(["R", "L"], {
+	batterHand: z.enum(["Right", "Left"], {
 		required_error: "You need to select a batter handedness",
 	}),
 	velocity: z.number(),
@@ -43,13 +43,13 @@ interface PitchFormProps {
 }
 
 export const PitchForm = () => {
-	const { isLoading, setIsLoading } = TrackerState.useContainer();
+	//const { isLoading, setIsLoading } = TrackerState.useContainer();
 	// 1. Define your form.
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
 		defaultValues: {
 			pitcher: "Camden Scholl",
-			batterHand: "R",
+			batterHand: "Right",
 			velocity: 50,
 			pitchType: "FB",
 			contact: "S",
@@ -71,7 +71,7 @@ export const PitchForm = () => {
 		}
 
 		const pitchesCollRef = collection(db, "pitches");
-		setIsLoading(true);
+		//setIsLoading(true);
 		try {
 			await addDoc(pitchesCollRef, {
 				batterHand: values.batterHand,
@@ -85,7 +85,7 @@ export const PitchForm = () => {
 			});
 		} catch (err) {
 			console.error(err);
-			setIsLoading(false);
+			//setIsLoading(false);
 		}
 	}
 

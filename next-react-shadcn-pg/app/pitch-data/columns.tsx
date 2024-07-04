@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 
 import { deletePitch } from "@/components/DataEdit";
+import DataTableRowActions from "@/components/DataTableRowActions";
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
@@ -28,9 +29,14 @@ export type Pitch = {
 	result: "Ball" | "Strike" | "Foul" | "H" | "2B" | "3B" | "HR";
 };
 
+interface PitchColumnsProps {
+  onEdit: (pitch: Pitch) => void;
+  onDelete: (pitch: Pitch) => void;
+}
 
 
-export const columns: ColumnDef<Pitch>[] = [
+
+export const getPitchColumns = ({ onEdit, onDelete}: PitchColumnsProps): ColumnDef<Pitch>[] => [
 	{
 		accessorKey: "fullName",
 		header: "Pitcher",
@@ -58,29 +64,7 @@ export const columns: ColumnDef<Pitch>[] = [
 	},
   {
     id: "actions",
-    cell: ({ row }) => {
-      const pitch = row.original;
- 
-      return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
-              <MoreHorizontal className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem
-              onClick={() => deletePitch(pitch.id)}
-            >
-              Delete Pitch
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>Edit Pitch</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      )
-    },
+    cell: ({ row }) => <DataTableRowActions row={row} onEdit={onEdit} onDelete={onDelete}/>
+      
   },
 ];
