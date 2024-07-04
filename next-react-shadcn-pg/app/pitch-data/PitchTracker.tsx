@@ -14,6 +14,7 @@ import {
   deleteDoc,
   doc,
 } from "firebase/firestore";
+import { PitchUpdaterForm } from "@/components/UpdatePitchForm";
 // import TrackerState from "@/components/Tracker.state";
 
 async function getPitches(): Promise<Pitch[]> {
@@ -32,6 +33,8 @@ async function getPitches(): Promise<Pitch[]> {
 export default function PitchTracker() {
 	const [isLoading, setIsLoading] = useState<boolean>(false);
 	const [pitchData, setPitchData] = useState<Pitch[]>([]);
+  const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
+  const [selectedPitch, setSelectedPitch] = useState<Pitch | null>(null);
 
 
   // const onDelete = useCallback(async (pitch: Pitch) => {
@@ -50,7 +53,10 @@ export default function PitchTracker() {
     }
   }
 
-  const onEdit = useCallback((pitch: Pitch) => alert(`On edit pressed for pitch with id ${pitch.id}`), []);
+  const onEdit = useCallback((pitch: Pitch) => {
+    setSelectedPitch(pitch);
+    setIsDialogOpen(true);
+  }, []);
 
   const columns = getPitchColumns({ onEdit, onDelete });
 
@@ -66,7 +72,15 @@ export default function PitchTracker() {
 
 	return (
 		<div className="flex flex-row">
-			<PitchForm />
+      <div className="flex no-wrap">
+        <PitchUpdaterForm isOpen={isDialogOpen} pitch={selectedPitch} onOpenChange={(value: boolean): void => {
+          setIsDialogOpen(value);
+          if (!value) {
+            setSelectedPitch(null);
+          }
+        }}/>
+      </div>
+			<PitchForm setIsLoading={setIsLoading}/>
 
 			<div className="p-4">
 				<h1 className="text-3xl font-bold mb-2">Pitch Data</h1>

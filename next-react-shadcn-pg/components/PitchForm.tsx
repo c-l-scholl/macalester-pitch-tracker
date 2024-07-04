@@ -20,7 +20,6 @@ import { Timestamp, addDoc, collection, getDocs } from "firebase/firestore";
 import { db } from "@/firebase/clientApp";
 import { auth } from "@/firebase/clientApp";
 import { Dispatch, SetStateAction } from "react";
-import TrackerState from "./Tracker.state";
 
 
 const formSchema = z.object({
@@ -34,15 +33,16 @@ const formSchema = z.object({
 	pitchType: z.enum(["FB", "2S", "CH", "SL", "CB", "Other"], {
 		required_error: "You need to select a pitch type",
 	}),
-	contact: z.enum(["B", "S", "F", "O", "H", "2B", "3B", "HR"], {
+	contact: z.enum(["Ball", "Strike", "Foul", "Out", "H", "2B", "3B", "HR"], {
 		required_error: "You need to select a result",
 	}),
 });
 
 interface PitchFormProps {
+  setIsLoading: Dispatch<SetStateAction<boolean>>
 }
 
-export const PitchForm = () => {
+export const PitchForm = ({setIsLoading}: PitchFormProps) => {
 	//const { isLoading, setIsLoading } = TrackerState.useContainer();
 	// 1. Define your form.
 	const form = useForm<z.infer<typeof formSchema>>({
@@ -52,7 +52,7 @@ export const PitchForm = () => {
 			batterHand: "Right",
 			velocity: 50,
 			pitchType: "FB",
-			contact: "S",
+			contact: "Strike",
 		},
 	});
 
@@ -60,18 +60,9 @@ export const PitchForm = () => {
 	async function onSubmit(values: z.infer<typeof formSchema>) {
 		// Do something with the form values.
 		// ✅ This will be type-safe and validated.
-		interface Pitch {
-			fullName: string;
-			pitchDate: Timestamp;
-			batterHand: string;
-			pitchType: string;
-			velocity: number;
-			result: string;
-			id?: string;
-		}
 
 		const pitchesCollRef = collection(db, "pitches");
-		//setIsLoading(true);
+		setIsLoading(true);
 		try {
 			await addDoc(pitchesCollRef, {
 				batterHand: values.batterHand,
@@ -85,7 +76,7 @@ export const PitchForm = () => {
 			});
 		} catch (err) {
 			console.error(err);
-			//setIsLoading(false);
+			setIsLoading(false);
 		}
 	}
 
@@ -232,25 +223,25 @@ export const PitchForm = () => {
 									>
 										<FormItem className="flex items-center space-x-3 space-y-0">
 											<FormControl>
-												<RadioGroupItem value="B" />
+												<RadioGroupItem value="Ball" />
 											</FormControl>
 											<FormLabel className="font-normal">Ball</FormLabel>
 										</FormItem>
 										<FormItem className="flex items-center space-x-3 space-y-0">
 											<FormControl>
-												<RadioGroupItem value="S" />
+												<RadioGroupItem value="Strike" />
 											</FormControl>
 											<FormLabel className="font-normal">Strike</FormLabel>
 										</FormItem>
 										<FormItem className="flex items-center space-x-3 space-y-0">
 											<FormControl>
-												<RadioGroupItem value="F" />
+												<RadioGroupItem value="Foul" />
 											</FormControl>
 											<FormLabel className="font-normal">Foul</FormLabel>
 										</FormItem>
 										<FormItem className="flex items-center space-x-3 space-y-0">
 											<FormControl>
-												<RadioGroupItem value="O" />
+												<RadioGroupItem value="Out" />
 											</FormControl>
 											<FormLabel className="font-normal">Out</FormLabel>
 										</FormItem>

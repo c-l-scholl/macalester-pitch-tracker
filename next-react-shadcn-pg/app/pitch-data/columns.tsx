@@ -34,9 +34,7 @@ interface PitchColumnsProps {
   onDelete: (pitch: Pitch) => void;
 }
 
-
-
-export const getPitchColumns = ({ onEdit, onDelete}: PitchColumnsProps): ColumnDef<Pitch>[] => [
+export const getPitchColumns = ({ onEdit, onDelete }: PitchColumnsProps): ColumnDef<Pitch>[] => [
 	{
 		accessorKey: "fullName",
 		header: "Pitcher",
