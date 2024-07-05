@@ -21,7 +21,7 @@ import { db } from "@/firebase/clientApp";
 import { auth } from "@/firebase/clientApp";
 import { Dispatch, SetStateAction } from "react";
 import { Pitch } from "@/app/pitch-data/columns";
-import { Dialog } from "@radix-ui/react-dialog";
+import { Dialog, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 const formSchema = z.object({
 	batterHand: z.enum(["Right", "Left"], {
@@ -42,7 +42,7 @@ interface PitchUpdaterFormProps {
 	pitch: Pitch | null;
 }
 
-export const PitchUpdaterForm = ({
+const PitchUpdaterForm = ({
 	isOpen,
 	onOpenChange,
 	pitch,
@@ -72,187 +72,194 @@ export const PitchUpdaterForm = ({
 	}
 
 	return (
-    <Dialog>
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-          <FormField
-            control={form.control}
-            name="batterHand"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Batter Handedness</FormLabel>
-                <FormControl>
-                  <RadioGroup
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                    className="flex flex-col space-y-1"
-                  >
-                    <FormItem className="flex items-center space-x-3 space-y-0">
-                      <FormControl>
-                        <RadioGroupItem value="Right" />
-                      </FormControl>
-                      <FormLabel className="font-normal">Right-Handed</FormLabel>
-                    </FormItem>
-                    <FormItem className="flex items-center space-x-3 space-y-0">
-                      <FormControl>
-                        <RadioGroupItem value="Left" />
-                      </FormControl>
-                      <FormLabel className="font-normal">Left-Handed</FormLabel>
-                    </FormItem>
-                  </RadioGroup>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="velocity"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Velocity</FormLabel>
-                <FormControl>
-                  <Input
-                    type="number"
-                    min={50}
-                    max={110}
-                    placeholder="In mph"
-                    {...field}
-                    onChange={(event) => field.onChange(+event.target.value)}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="pitchType"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Pitch Type</FormLabel>
-                <FormControl>
-                  <RadioGroup
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                    className="flex flex-col space-y-1"
-                  >
-                    <FormItem className="flex items-center space-x-3 space-y-0">
-                      <FormControl>
-                        <RadioGroupItem value="FB" />
-                      </FormControl>
-                      <FormLabel className="font-normal">
-                        4-seam Fastball
-                      </FormLabel>
-                    </FormItem>
-                    <FormItem className="flex items-center space-x-3 space-y-0">
-                      <FormControl>
-                        <RadioGroupItem value="2S" />
-                      </FormControl>
-                      <FormLabel className="font-normal">
-                        2-seam Fastball
-                      </FormLabel>
-                    </FormItem>
-                    <FormItem className="flex items-center space-x-3 space-y-0">
-                      <FormControl>
-                        <RadioGroupItem value="CH" />
-                      </FormControl>
-                      <FormLabel className="font-normal">Change-up</FormLabel>
-                    </FormItem>
-                    <FormItem className="flex items-center space-x-3 space-y-0">
-                      <FormControl>
-                        <RadioGroupItem value="SL" />
-                      </FormControl>
-                      <FormLabel className="font-normal">Slider</FormLabel>
-                    </FormItem>
-                    <FormItem className="flex items-center space-x-3 space-y-0">
-                      <FormControl>
-                        <RadioGroupItem value="CB" />
-                      </FormControl>
-                      <FormLabel className="font-normal">Curveball</FormLabel>
-                    </FormItem>
-                    <FormItem className="flex items-center space-x-3 space-y-0">
-                      <FormControl>
-                        <RadioGroupItem value="Other" />
-                      </FormControl>
-                      <FormLabel className="font-normal">Other</FormLabel>
-                    </FormItem>
-                  </RadioGroup>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="contact"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Result</FormLabel>
-                <FormControl>
-                  <RadioGroup
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                    className="flex flex-col space-y-1"
-                  >
-                    <FormItem className="flex items-center space-x-3 space-y-0">
-                      <FormControl>
-                        <RadioGroupItem value="Ball" />
-                      </FormControl>
-                      <FormLabel className="font-normal">Ball</FormLabel>
-                    </FormItem>
-                    <FormItem className="flex items-center space-x-3 space-y-0">
-                      <FormControl>
-                        <RadioGroupItem value="Strike" />
-                      </FormControl>
-                      <FormLabel className="font-normal">Strike</FormLabel>
-                    </FormItem>
-                    <FormItem className="flex items-center space-x-3 space-y-0">
-                      <FormControl>
-                        <RadioGroupItem value="Foul" />
-                      </FormControl>
-                      <FormLabel className="font-normal">Foul</FormLabel>
-                    </FormItem>
-                    <FormItem className="flex items-center space-x-3 space-y-0">
-                      <FormControl>
-                        <RadioGroupItem value="Out" />
-                      </FormControl>
-                      <FormLabel className="font-normal">Out</FormLabel>
-                    </FormItem>
-                    <FormItem className="flex items-center space-x-3 space-y-0">
-                      <FormControl>
-                        <RadioGroupItem value="H" />
-                      </FormControl>
-                      <FormLabel className="font-normal">Single</FormLabel>
-                    </FormItem>
-                    <FormItem className="flex items-center space-x-3 space-y-0">
-                      <FormControl>
-                        <RadioGroupItem value="2B" />
-                      </FormControl>
-                      <FormLabel className="font-normal">Double</FormLabel>
-                    </FormItem>
-                    <FormItem className="flex items-center space-x-3 space-y-0">
-                      <FormControl>
-                        <RadioGroupItem value="3B" />
-                      </FormControl>
-                      <FormLabel className="font-normal">Triple</FormLabel>
-                    </FormItem>
-                    <FormItem className="flex items-center space-x-3 space-y-0">
-                      <FormControl>
-                        <RadioGroupItem value="HR" />
-                      </FormControl>
-                      <FormLabel className="font-normal">Homerun</FormLabel>
-                    </FormItem>
-                  </RadioGroup>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+		<>
+			<DialogHeader>
+				<DialogTitle>Update Pitch Data</DialogTitle>
+			</DialogHeader>
+			<Form {...form}>
+				<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+					<FormField
+						control={form.control}
+						name="batterHand"
+						render={({ field }) => (
+							<FormItem>
+								<FormLabel>Batter Handedness</FormLabel>
+								<FormControl>
+									<RadioGroup
+										onValueChange={field.onChange}
+										defaultValue={field.value}
+										className="flex flex-col space-y-1"
+									>
+										<FormItem className="flex items-center space-x-3 space-y-0">
+											<FormControl>
+												<RadioGroupItem value="Right" />
+											</FormControl>
+											<FormLabel className="font-normal">
+												Right-Handed
+											</FormLabel>
+										</FormItem>
+										<FormItem className="flex items-center space-x-3 space-y-0">
+											<FormControl>
+												<RadioGroupItem value="Left" />
+											</FormControl>
+											<FormLabel className="font-normal">Left-Handed</FormLabel>
+										</FormItem>
+									</RadioGroup>
+								</FormControl>
+								<FormMessage />
+							</FormItem>
+						)}
+					/>
+					<FormField
+						control={form.control}
+						name="velocity"
+						render={({ field }) => (
+							<FormItem>
+								<FormLabel>Velocity</FormLabel>
+								<FormControl>
+									<Input
+										type="number"
+										min={50}
+										max={110}
+										placeholder="In mph"
+										{...field}
+										onChange={(event) => field.onChange(+event.target.value)}
+									/>
+								</FormControl>
+								<FormMessage />
+							</FormItem>
+						)}
+					/>
+					<FormField
+						control={form.control}
+						name="pitchType"
+						render={({ field }) => (
+							<FormItem>
+								<FormLabel>Pitch Type</FormLabel>
+								<FormControl>
+									<RadioGroup
+										onValueChange={field.onChange}
+										defaultValue={field.value}
+										className="flex flex-col space-y-1"
+									>
+										<FormItem className="flex items-center space-x-3 space-y-0">
+											<FormControl>
+												<RadioGroupItem value="FB" />
+											</FormControl>
+											<FormLabel className="font-normal">
+												4-seam Fastball
+											</FormLabel>
+										</FormItem>
+										<FormItem className="flex items-center space-x-3 space-y-0">
+											<FormControl>
+												<RadioGroupItem value="2S" />
+											</FormControl>
+											<FormLabel className="font-normal">
+												2-seam Fastball
+											</FormLabel>
+										</FormItem>
+										<FormItem className="flex items-center space-x-3 space-y-0">
+											<FormControl>
+												<RadioGroupItem value="CH" />
+											</FormControl>
+											<FormLabel className="font-normal">Change-up</FormLabel>
+										</FormItem>
+										<FormItem className="flex items-center space-x-3 space-y-0">
+											<FormControl>
+												<RadioGroupItem value="SL" />
+											</FormControl>
+											<FormLabel className="font-normal">Slider</FormLabel>
+										</FormItem>
+										<FormItem className="flex items-center space-x-3 space-y-0">
+											<FormControl>
+												<RadioGroupItem value="CB" />
+											</FormControl>
+											<FormLabel className="font-normal">Curveball</FormLabel>
+										</FormItem>
+										<FormItem className="flex items-center space-x-3 space-y-0">
+											<FormControl>
+												<RadioGroupItem value="Other" />
+											</FormControl>
+											<FormLabel className="font-normal">Other</FormLabel>
+										</FormItem>
+									</RadioGroup>
+								</FormControl>
+								<FormMessage />
+							</FormItem>
+						)}
+					/>
+					<FormField
+						control={form.control}
+						name="contact"
+						render={({ field }) => (
+							<FormItem>
+								<FormLabel>Result</FormLabel>
+								<FormControl>
+									<RadioGroup
+										onValueChange={field.onChange}
+										defaultValue={field.value}
+										className="flex flex-col space-y-1"
+									>
+										<FormItem className="flex items-center space-x-3 space-y-0">
+											<FormControl>
+												<RadioGroupItem value="Ball" />
+											</FormControl>
+											<FormLabel className="font-normal">Ball</FormLabel>
+										</FormItem>
+										<FormItem className="flex items-center space-x-3 space-y-0">
+											<FormControl>
+												<RadioGroupItem value="Strike" />
+											</FormControl>
+											<FormLabel className="font-normal">Strike</FormLabel>
+										</FormItem>
+										<FormItem className="flex items-center space-x-3 space-y-0">
+											<FormControl>
+												<RadioGroupItem value="Foul" />
+											</FormControl>
+											<FormLabel className="font-normal">Foul</FormLabel>
+										</FormItem>
+										<FormItem className="flex items-center space-x-3 space-y-0">
+											<FormControl>
+												<RadioGroupItem value="Out" />
+											</FormControl>
+											<FormLabel className="font-normal">Out</FormLabel>
+										</FormItem>
+										<FormItem className="flex items-center space-x-3 space-y-0">
+											<FormControl>
+												<RadioGroupItem value="H" />
+											</FormControl>
+											<FormLabel className="font-normal">Single</FormLabel>
+										</FormItem>
+										<FormItem className="flex items-center space-x-3 space-y-0">
+											<FormControl>
+												<RadioGroupItem value="2B" />
+											</FormControl>
+											<FormLabel className="font-normal">Double</FormLabel>
+										</FormItem>
+										<FormItem className="flex items-center space-x-3 space-y-0">
+											<FormControl>
+												<RadioGroupItem value="3B" />
+											</FormControl>
+											<FormLabel className="font-normal">Triple</FormLabel>
+										</FormItem>
+										<FormItem className="flex items-center space-x-3 space-y-0">
+											<FormControl>
+												<RadioGroupItem value="HR" />
+											</FormControl>
+											<FormLabel className="font-normal">Homerun</FormLabel>
+										</FormItem>
+									</RadioGroup>
+								</FormControl>
+								<FormMessage />
+							</FormItem>
+						)}
+					/>
 
-          <Button type="submit">Submit</Button>
-        </form>
-      </Form>
-    </Dialog>
+					<Button type="submit">Submit</Button>
+				</form>
+			</Form>
+		</>
 	);
 };
+
+export default PitchUpdaterForm;

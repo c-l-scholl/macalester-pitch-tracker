@@ -1,21 +1,6 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
-
-import { MoreHorizontal } from "lucide-react"
-
-import { Button } from "@/components/ui/button"
-
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-
-import { deletePitch } from "@/components/DataEdit";
 import DataTableRowActions from "@/components/DataTableRowActions";
 
 // This type is used to define the shape of our data.
@@ -30,11 +15,14 @@ export type Pitch = {
 };
 
 interface PitchColumnsProps {
-  onEdit: (pitch: Pitch) => void;
-  onDelete: (pitch: Pitch) => void;
+	onEdit: (pitch: Pitch) => void;
+	onDelete: (pitch: Pitch) => void;
 }
 
-export const getPitchColumns = ({ onEdit, onDelete }: PitchColumnsProps): ColumnDef<Pitch>[] => [
+export const getPitchColumns = ({
+	onEdit,
+	onDelete,
+}: PitchColumnsProps): ColumnDef<Pitch>[] => [
 	{
 		accessorKey: "fullName",
 		header: "Pitcher",
@@ -46,11 +34,11 @@ export const getPitchColumns = ({ onEdit, onDelete }: PitchColumnsProps): Column
 	{
 		accessorKey: "velocity",
 		header: "Velocity",
-    cell: ({ row }) => {
-      const amount = parseFloat(row.getValue("velocity"));
-      const formatted = `${amount} mph`;
-      return <div className="text-right font-medium">{formatted}</div>
-    }
+		cell: ({ row }) => {
+			const amount = parseFloat(row.getValue("velocity"));
+			const formatted = `${amount} mph`;
+			return <div className="text-right font-medium">{formatted}</div>;
+		},
 	},
 	{
 		accessorKey: "pitchType",
@@ -60,9 +48,14 @@ export const getPitchColumns = ({ onEdit, onDelete }: PitchColumnsProps): Column
 		accessorKey: "result",
 		header: "Result",
 	},
-  {
-    id: "actions",
-    cell: ({ row }) => <DataTableRowActions row={row} onEdit={onEdit} onDelete={onDelete}/>
-      
-  },
+	{
+		id: "actions",
+		cell: ({ row }) => (
+			<DataTableRowActions
+				row={row}
+				onEdit={onEdit}
+				onDelete={onDelete}
+			/>
+		),
+	},
 ];
