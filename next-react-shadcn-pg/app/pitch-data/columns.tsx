@@ -10,8 +10,8 @@ export type Pitch = {
 	fullName: string;
 	batterHand: "Left" | "Right";
 	velocity: number;
-	pitchType: "FB" | "2S" | "CH" | "CB" | "SL" | "Other";
-	result: "Ball" | "Strike" | "Foul" | "H" | "2B" | "3B" | "HR";
+	pitchType: "FB" | "2S" | "CH" | "SL" | "CB" | "Other";
+	result: "Ball" | "Strike" | "Foul" | "Out" | "H" | "2B" | "3B" | "HR";
 };
 
 interface PitchColumnsProps {

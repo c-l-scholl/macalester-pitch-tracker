@@ -1,5 +1,5 @@
 import { Row } from "@tanstack/react-table";
-import React, { useContext } from "react";
+import React from "react";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -49,7 +49,7 @@ const DataTableRowActions = <TData,>({
 					<DropdownMenuSeparator />
 					<DialogTrigger asChild>
 						<DropdownMenuItem onClick={() => onEdit(row.original)}>
-							<span>Edit Pitch</span>
+							Edit Pitch
 						</DropdownMenuItem>
 					</DialogTrigger>
 				</DropdownMenuContent>

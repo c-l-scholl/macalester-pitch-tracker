@@ -40,14 +40,6 @@ export default function PitchTracker() {
 	const [isChanging, setIsChanging] = useState<boolean>(false);
 	const [selectedPitch, setSelectedPitch] = useState<Pitch | null>(null);
 
-	// const onDelete = useCallback(async (pitch: Pitch) => {
-	//   setIsLoading(true);
-	//   if (pitch.id != undefined) {
-	//     const pitchDocToDelete = doc(db, "pitches", pitch.id);
-	//     await deleteDoc(pitchDocToDelete);
-	//   }
-	// }, []);
-
 	const onDelete = async (pitch: Pitch) => {
 		setIsLoading(true);
 		if (pitch.id != undefined) {

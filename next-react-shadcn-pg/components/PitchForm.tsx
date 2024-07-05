@@ -33,23 +33,23 @@ const formSchema = z.object({
 	pitcher: z.string().min(2, {
 		message: "Username must be at least 2 characters.",
 	}),
-	batterHand: z.enum(["Right", "Left"], {
-		required_error: "You need to select a batter handedness",
+	batterHand: z.enum(["Left", "Right"], {
+		required_error: "You need to select a batter handedness.",
 	}),
 	velocity: z.number({
-		required_error: "You need to enter a velocity",
+		required_error: "You need to enter a velocity.",
 	}),
 	pitchType: z.enum(["FB", "2S", "CH", "SL", "CB", "Other"], {
-		required_error: "You need to select a pitch type",
+		required_error: "You need to select a pitch type.",
 	}),
 	contact: z.enum(["Ball", "Strike", "Foul", "Out", "H", "2B", "3B", "HR"], {
-		required_error: "You need to select a result",
+		required_error: "You need to select a result.",
 	}),
 });
 
 interface PitchFormProps {
 	setIsLoading: Dispatch<SetStateAction<boolean>>;
-  onOpenChange: (value: boolean) => void;
+	onOpenChange: (value: boolean) => void;
 	selectedPitch: Pitch | null;
 	isChanging: boolean;
 }
@@ -58,7 +58,7 @@ export const PitchForm = ({
 	setIsLoading,
 	selectedPitch,
 	isChanging,
-  onOpenChange,
+	onOpenChange,
 }: PitchFormProps) => {
 	//const { isLoading, setIsLoading } = TrackerState.useContainer();
 	// 1. Define your form.
@@ -72,20 +72,19 @@ export const PitchForm = ({
 		},
 	});
 
-  useEffect(() => {
-    if (selectedPitch) {
-      form.reset({
-        batterHand: selectedPitch.batterHand,
-        pitcher: selectedPitch.fullName,
-			  pitchType: selectedPitch.pitchType,
-			  velocity: selectedPitch.velocity,
-			  contact: selectedPitch.result,
-      })
-    } else {
-      form.reset();
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isChanging, selectedPitch]);
+	useEffect(() => {
+		if (selectedPitch) {
+			form.reset({
+				pitcher: selectedPitch.fullName,
+				batterHand: selectedPitch.batterHand,
+				pitchType: selectedPitch.pitchType,
+				velocity: selectedPitch.velocity,
+				contact: selectedPitch.result,
+			});
+		} else {
+			form.reset();
+		}
+	}, [isChanging, selectedPitch, form]);
 
 	// 2. Define a submit handler.
 	async function onSubmit(values: z.infer<typeof formSchema>) {
@@ -130,15 +129,17 @@ export const PitchForm = ({
 				setIsLoading(false);
 			}
 		}
-    onOpenChange(false);
+		onOpenChange(false);
 	}
 
 	return (
 		<div className="flex flex-col gap-2 w-[200px] min-w-[200px] border-r min-h-screen p-4">
-      <div className="flex">
-        <h1 className="mb-2 text-xl font-bold"> {selectedPitch ? "Change Pitch" : "New Pitch"} </h1>
-      </div>
-      
+			<div className="flex">
+				<h1 className="mb-2 text-xl font-bold">
+					{selectedPitch ? "Change Pitch" : "New Pitch"}
+				</h1>
+			</div>
+
 			<Form {...form}>
 				<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
 					<FormField
@@ -330,11 +331,14 @@ export const PitchForm = ({
 							</FormItem>
 						)}
 					/>
-          <div className="flex flex-row gap-3">
-            {isChanging && <Button variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>}
-					  <Button type="submit">Submit</Button>
-          </div>
-          
+					<div className="flex flex-row gap-3">
+						{isChanging && (
+							<Button variant="outline" onClick={() => onOpenChange(false)}>
+								Cancel
+							</Button>
+						)}
+						<Button type="submit">Submit</Button>
+					</div>
 				</form>
 			</Form>
 		</div>
