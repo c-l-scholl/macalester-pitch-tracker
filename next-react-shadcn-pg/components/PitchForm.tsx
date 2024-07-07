@@ -8,7 +8,6 @@ import { Button } from "@/components/ui/button";
 import {
 	Form,
 	FormControl,
-	FormDescription,
 	FormField,
 	FormItem,
 	FormLabel,
@@ -21,12 +20,11 @@ import {
 	addDoc,
 	collection,
 	doc,
-	getDoc,
 	setDoc,
 } from "firebase/firestore";
 import { db } from "@/firebase/clientApp";
 import { auth } from "@/firebase/clientApp";
-import { Dispatch, SetStateAction, useEffect, useLayoutEffect } from "react";
+import { Dispatch, SetStateAction, useEffect } from "react";
 import { Pitch } from "@/app/pitch-data/columns";
 
 const formSchema = z.object({
@@ -140,7 +138,7 @@ export const PitchForm = ({
 	}
 
 	return (
-		<div className="flex flex-col gap-2 w-[200px] min-w-[200px] border-r min-h-screen p-4">
+		<div className="flex flex-col gap-2 w-[250px] min-w-[250px] border-r min-h-screen max-h-screen p-4">
 			<div className="flex">
 				<h1 className="mb-2 text-xl font-bold">
 					{selectedPitch ? "Change Pitch" : "New Pitch"}
@@ -224,48 +222,52 @@ export const PitchForm = ({
 									<RadioGroup
 										onValueChange={field.onChange}
 										value={field.value}
-										className="flex flex-col space-y-1"
+										className="flex flex-row space-x-2"
 									>
-										<FormItem className="flex items-center space-x-3 space-y-0">
-											<FormControl>
-												<RadioGroupItem value="FB" />
-											</FormControl>
-											<FormLabel className="font-normal">
-												4-seam Fastball
-											</FormLabel>
-										</FormItem>
-										<FormItem className="flex items-center space-x-3 space-y-0">
-											<FormControl>
-												<RadioGroupItem value="2S" />
-											</FormControl>
-											<FormLabel className="font-normal">
-												2-seam Fastball
-											</FormLabel>
-										</FormItem>
-										<FormItem className="flex items-center space-x-3 space-y-0">
-											<FormControl>
-												<RadioGroupItem value="CH" />
-											</FormControl>
-											<FormLabel className="font-normal">Change-up</FormLabel>
-										</FormItem>
-										<FormItem className="flex items-center space-x-3 space-y-0">
-											<FormControl>
-												<RadioGroupItem value="SL" />
-											</FormControl>
-											<FormLabel className="font-normal">Slider</FormLabel>
-										</FormItem>
-										<FormItem className="flex items-center space-x-3 space-y-0">
-											<FormControl>
-												<RadioGroupItem value="CB" />
-											</FormControl>
-											<FormLabel className="font-normal">Curveball</FormLabel>
-										</FormItem>
-										<FormItem className="flex items-center space-x-3 space-y-0">
-											<FormControl>
-												<RadioGroupItem value="Other" />
-											</FormControl>
-											<FormLabel className="font-normal">Other</FormLabel>
-										</FormItem>
+                    <div className="flex-col space-y-2">
+                      <FormItem className="flex items-center space-x-3 space-y-0">
+                        <FormControl>
+                          <RadioGroupItem value="FB" />
+                        </FormControl>
+                        <FormLabel className="font-normal">
+                          4-seam FB
+                        </FormLabel>
+                      </FormItem>
+                      <FormItem className="flex items-center space-x-3 space-y-0">
+                        <FormControl>
+                          <RadioGroupItem value="2S" />
+                        </FormControl>
+                        <FormLabel className="font-normal">
+                          2-seam FB
+                        </FormLabel>
+                      </FormItem>
+                      <FormItem className="flex items-center space-x-3 space-y-0">
+                        <FormControl>
+                          <RadioGroupItem value="CH" />
+                        </FormControl>
+                        <FormLabel className="font-normal">Change-up</FormLabel>
+                      </FormItem>
+                    </div>
+										<div className="flex-col space-y-2">
+                      <FormItem className="flex items-center space-x-3 space-y-0">
+                        <FormControl>
+                          <RadioGroupItem value="SL" />
+                        </FormControl>
+                        <FormLabel className="font-normal">Slider</FormLabel>
+                      </FormItem>
+                      <FormItem className="flex items-center space-x-3 space-y-0">
+                        <FormControl>
+                          <RadioGroupItem value="CB" />
+                        </FormControl>
+                        <FormLabel className="font-normal">Curveball</FormLabel>
+                      </FormItem>
+                      <FormItem className="flex items-center space-x-3 space-y-0">
+                        <FormControl>
+                          <RadioGroupItem value="Other" />
+                        </FormControl>
+                        <FormLabel className="font-normal">Other</FormLabel>
+                      </FormItem>
+                    </div>
 									</RadioGroup>
 								</FormControl>
 								<FormMessage />
@@ -282,56 +284,60 @@ export const PitchForm = ({
 									<RadioGroup
 										onValueChange={field.onChange}
 										value={field.value}
-										className="flex flex-col space-y-1"
+										className="flex flex-row space-x-2"
 									>
-										<FormItem className="flex items-center space-x-3 space-y-0">
-											<FormControl>
-												<RadioGroupItem value="Ball" />
-											</FormControl>
-											<FormLabel className="font-normal">Ball</FormLabel>
-										</FormItem>
-										<FormItem className="flex items-center space-x-3 space-y-0">
-											<FormControl>
-												<RadioGroupItem value="Strike" />
-											</FormControl>
-											<FormLabel className="font-normal">Strike</FormLabel>
-										</FormItem>
-										<FormItem className="flex items-center space-x-3 space-y-0">
-											<FormControl>
-												<RadioGroupItem value="Foul" />
-											</FormControl>
-											<FormLabel className="font-normal">Foul</FormLabel>
-										</FormItem>
-										<FormItem className="flex items-center space-x-3 space-y-0">
-											<FormControl>
-												<RadioGroupItem value="Out" />
-											</FormControl>
-											<FormLabel className="font-normal">Out</FormLabel>
-										</FormItem>
-										<FormItem className="flex items-center space-x-3 space-y-0">
-											<FormControl>
-												<RadioGroupItem value="H" />
-											</FormControl>
-											<FormLabel className="font-normal">Single</FormLabel>
-										</FormItem>
-										<FormItem className="flex items-center space-x-3 space-y-0">
-											<FormControl>
-												<RadioGroupItem value="2B" />
-											</FormControl>
-											<FormLabel className="font-normal">Double</FormLabel>
-										</FormItem>
-										<FormItem className="flex items-center space-x-3 space-y-0">
-											<FormControl>
-												<RadioGroupItem value="3B" />
-											</FormControl>
-											<FormLabel className="font-normal">Triple</FormLabel>
-										</FormItem>
-										<FormItem className="flex items-center space-x-3 space-y-0">
-											<FormControl>
-												<RadioGroupItem value="HR" />
-											</FormControl>
-											<FormLabel className="font-normal">Homerun</FormLabel>
-										</FormItem>
+                    <div className="flex-col space-y-2">
+                      <FormItem className="flex items-center space-x-3 space-y-0">
+                        <FormControl>
+                          <RadioGroupItem value="Ball" />
+                        </FormControl>
+                        <FormLabel className="font-normal">Ball</FormLabel>
+                      </FormItem>
+                      <FormItem className="flex items-center space-x-3 space-y-0">
+                        <FormControl>
+                          <RadioGroupItem value="Strike" />
+                        </FormControl>
+                        <FormLabel className="font-normal">Strike</FormLabel>
+                      </FormItem>
+                      <FormItem className="flex items-center space-x-3 space-y-0">
+                        <FormControl>
+                          <RadioGroupItem value="Foul" />
+                        </FormControl>
+                        <FormLabel className="font-normal">Foul</FormLabel>
+                      </FormItem>
+                      <FormItem className="flex items-center space-x-3 space-y-0">
+                        <FormControl>
+                          <RadioGroupItem value="Out" />
+                        </FormControl>
+                        <FormLabel className="font-normal">Out</FormLabel>
+                      </FormItem>
+                    </div>
+                    <div className="flex-col space-y-2">
+                      <FormItem className="flex items-center space-x-3 space-y-0">
+                        <FormControl>
+                          <RadioGroupItem value="H" />
+                        </FormControl>
+                        <FormLabel className="font-normal">Single</FormLabel>
+                      </FormItem>
+                      <FormItem className="flex items-center space-x-3 space-y-0">
+                        <FormControl>
+                          <RadioGroupItem value="2B" />
+                        </FormControl>
+                        <FormLabel className="font-normal">Double</FormLabel>
+                      </FormItem>
+                      <FormItem className="flex items-center space-x-3 space-y-0">
+                        <FormControl>
+                          <RadioGroupItem value="3B" />
+                        </FormControl>
+                        <FormLabel className="font-normal">Triple</FormLabel>
+                      </FormItem>
+                      <FormItem className="flex items-center space-x-3 space-y-0">
+                        <FormControl>
+                          <RadioGroupItem value="HR" />
+                        </FormControl>
+                        <FormLabel className="font-normal">Homerun</FormLabel>
+                      </FormItem>
+                    </div>
 									</RadioGroup>
 								</FormControl>
 								<FormMessage />
