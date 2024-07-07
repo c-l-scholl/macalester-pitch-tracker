@@ -18,6 +18,7 @@ import {
 	deleteDoc,
 	doc,
 } from "firebase/firestore";
+import PitchCount from "./PitchCount";
 
 async function getPitches(): Promise<Pitch[]> {
 	// needs to be expanded to take specific pitcher
@@ -81,7 +82,11 @@ export default function PitchTracker() {
 			/>
 
 			<div className="p-4">
-				<h1 className="text-3xl font-bold mb-2">Pitch Data</h1>
+        <div className="flex flex-row justify-between items-center mb-2">
+          <h1 className="text-3xl font-bold ">Pitch Data</h1>
+          <PitchCount pitchCount={pitchData.length}/>
+        </div>
+				
 				{isLoading && <span>Loading</span>}
 				{!isLoading && <DataTable columns={columns} data={pitchData} />}
 			</div>
