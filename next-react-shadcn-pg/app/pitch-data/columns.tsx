@@ -37,7 +37,7 @@ export const getPitchColumns = ({
 		cell: ({ row }) => {
 			const amount = parseFloat(row.getValue("velocity"));
 			const formatted = `${amount} mph`;
-			return <div className="text-right font-medium">{formatted}</div>;
+			return <div className="text-left font-medium">{formatted}</div>;
 		},
 	},
 	{

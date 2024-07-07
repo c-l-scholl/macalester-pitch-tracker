@@ -3,7 +3,7 @@ import PitchTracker from "./PitchTracker";
 
 export default async function Page() {
   return (
-    <div>
+    <div className="min-w-screen">
       <PitchTracker/>
     </div>
   );

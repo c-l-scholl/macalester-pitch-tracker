@@ -138,7 +138,7 @@ export const PitchForm = ({
 	}
 
 	return (
-		<div className="flex flex-col gap-2 w-[250px] min-w-[250px] border-r min-h-screen max-h-screen p-4">
+		<div className="flex flex-col gap-2 w-[400px] min-w-[250px] border-r min-h-screen max-h-screen px-20 py-4">
 			<div className="flex">
 				<h1 className="mb-2 text-xl font-bold">
 					{selectedPitch ? "Change Pitch" : "New Pitch"}

@@ -73,15 +73,18 @@ export default function PitchTracker() {
 	}, [isLoading]);
 
 	return (
-		<div className="flex flex-row">
-			<PitchForm
-				setIsLoading={setIsLoading}
-				isChanging={isChanging}
-				selectedPitch={selectedPitch}
-				onOpenChange={onOpenChange}
-			/>
+		<div className="flex min-w-screen">
+      <div className="flex-none">
+        <PitchForm
+          setIsLoading={setIsLoading}
+          isChanging={isChanging}
+          selectedPitch={selectedPitch}
+          onOpenChange={onOpenChange}
+        />
+      </div>
+			
 
-			<div className="p-4">
+			<div className="flex-grow p-4 mx-4">
         <div className="flex flex-row justify-between items-center mb-2">
           <h1 className="text-3xl font-bold ">Pitch Data</h1>
           <PitchCount pitchCount={pitchData.length}/>
