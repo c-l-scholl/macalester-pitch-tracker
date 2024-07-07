@@ -104,7 +104,7 @@ export const PitchForm = ({
 					velocity: values.velocity,
 					result: values.contact,
 					// now there is user connected with each pitch
-					// userId: auth?.currentUser?.uid
+					userId: auth?.currentUser?.email,
 				});
 			} catch (err) {
 				console.error(err);

@@ -3,7 +3,6 @@
 import React, {
 	useState,
 	useEffect,
-	useCallback,
 } from "react";
 import { PitchForm } from "@/components/PitchForm";
 import { Pitch, getPitchColumns } from "./columns";
@@ -42,10 +41,15 @@ export default function PitchTracker() {
 	const onDelete = async (pitch: Pitch) => {
 		setIsLoading(true);
     onOpenChange(false);
-		if (pitch.id != undefined) {
-			const pitchDocToDelete = doc(db, "pitches", pitch.id);
-			await deleteDoc(pitchDocToDelete);
-		}
+    try {
+      if (pitch.id != undefined) {
+        const pitchDocToDelete = doc(db, "pitches", pitch.id);
+        await deleteDoc(pitchDocToDelete);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+		
 	};
 
 	const onEdit = (pitch: Pitch) => {
