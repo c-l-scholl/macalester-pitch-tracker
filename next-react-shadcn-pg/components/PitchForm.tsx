@@ -66,7 +66,7 @@ export const PitchForm = ({
 			batterHand: "Right",
 			velocity: 50,
 			pitchType: "FB",
-			contact: "Strike",
+			contact: "Ball",
 		},
 	});
 
@@ -83,7 +83,7 @@ export const PitchForm = ({
 			// want to maintain name and batter for data entry efficiency
 			form.resetField("pitchType", { defaultValue: "FB" });
 			form.resetField("velocity", { defaultValue: 50 });
-			form.resetField("contact", { defaultValue: "Strike" });
+			form.resetField("contact", { defaultValue: "Ball" });
 		}
 	}, [isChanging, selectedPitch, form]);
 

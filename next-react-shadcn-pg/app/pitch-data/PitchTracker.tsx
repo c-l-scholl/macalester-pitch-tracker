@@ -4,8 +4,6 @@ import React, {
 	useState,
 	useEffect,
 	useCallback,
-	useContext,
-	createContext,
 } from "react";
 import { PitchForm } from "@/components/PitchForm";
 import { Pitch, getPitchColumns } from "./columns";
@@ -49,10 +47,10 @@ export default function PitchTracker() {
 		}
 	};
 
-	const onEdit = useCallback((pitch: Pitch) => {
+	const onEdit = (pitch: Pitch) => {
 		setSelectedPitch(pitch);
 		setIsChanging(true);
-	}, []);
+	};
 
 	const onOpenChange = (value: boolean) => {
 		setIsChanging(false);
@@ -84,10 +82,8 @@ export default function PitchTracker() {
 
 			<div className="p-4">
 				<h1 className="text-3xl font-bold mb-2">Pitch Data</h1>
-				{/*isLoading && <span>Loading</span>*/}
-				{/* {!isLoading && <DataTable columns={columns} data={pitchData} />} */}
-
-				<DataTable columns={columns} data={pitchData} />
+				{isLoading && <span>Loading</span>}
+				{!isLoading && <DataTable columns={columns} data={pitchData} />}
 			</div>
 		</div>
 	);
