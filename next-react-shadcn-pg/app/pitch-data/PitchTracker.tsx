@@ -42,6 +42,7 @@ export default function PitchTracker() {
 
 	const onDelete = async (pitch: Pitch) => {
 		setIsLoading(true);
+    onOpenChange(false);
 		if (pitch.id != undefined) {
 			const pitchDocToDelete = doc(db, "pitches", pitch.id);
 			await deleteDoc(pitchDocToDelete);
@@ -50,8 +51,15 @@ export default function PitchTracker() {
 
 	const onEdit = useCallback((pitch: Pitch) => {
 		setSelectedPitch(pitch);
-    setIsChanging(true);
+		setIsChanging(true);
 	}, []);
+
+	const onOpenChange = (value: boolean) => {
+		setIsChanging(false);
+		if (!value) {
+			setSelectedPitch(null);
+		}
+	};
 
 	const columns = getPitchColumns({ onEdit, onDelete });
 
@@ -71,12 +79,7 @@ export default function PitchTracker() {
 				setIsLoading={setIsLoading}
 				isChanging={isChanging}
 				selectedPitch={selectedPitch}
-				onOpenChange={(value: boolean) => {
-					setIsChanging(false);
-					if (!value) {
-						setSelectedPitch(null);
-					}
-				}}
+				onOpenChange={onOpenChange}
 			/>
 
 			<div className="p-4">

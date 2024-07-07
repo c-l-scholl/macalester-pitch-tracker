@@ -26,7 +26,7 @@ import {
 } from "firebase/firestore";
 import { db } from "@/firebase/clientApp";
 import { auth } from "@/firebase/clientApp";
-import { Dispatch, SetStateAction, useEffect } from "react";
+import { Dispatch, SetStateAction, useEffect, useLayoutEffect } from "react";
 import { Pitch } from "@/app/pitch-data/columns";
 
 const formSchema = z.object({
@@ -60,13 +60,13 @@ export const PitchForm = ({
 	isChanging,
 	onOpenChange,
 }: PitchFormProps) => {
-	//const { isLoading, setIsLoading } = TrackerState.useContainer();
 	// 1. Define your form.
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
 		defaultValues: {
 			pitcher: "Camden Scholl",
 			batterHand: "Right",
+			velocity: 50,
 			pitchType: "FB",
 			contact: "Strike",
 		},
@@ -82,7 +82,10 @@ export const PitchForm = ({
 				contact: selectedPitch.result,
 			});
 		} else {
-			form.reset();
+			// want to maintain name and batter for data entry efficiency
+			form.resetField("pitchType", { defaultValue: "FB" });
+			form.resetField("velocity", { defaultValue: 50 });
+			form.resetField("contact", { defaultValue: "Strike" });
 		}
 	}, [isChanging, selectedPitch, form]);
 
@@ -130,6 +133,10 @@ export const PitchForm = ({
 			}
 		}
 		onOpenChange(false);
+
+    // could change this later for better efficiency
+    // need to call here because of async
+    form.reset();
 	}
 
 	return (
@@ -164,7 +171,7 @@ export const PitchForm = ({
 								<FormControl>
 									<RadioGroup
 										onValueChange={field.onChange}
-										defaultValue={field.value}
+										value={field.value}
 										className="flex flex-col space-y-1"
 									>
 										<FormItem className="flex items-center space-x-3 space-y-0">
@@ -216,7 +223,7 @@ export const PitchForm = ({
 								<FormControl>
 									<RadioGroup
 										onValueChange={field.onChange}
-										defaultValue={field.value}
+										value={field.value}
 										className="flex flex-col space-y-1"
 									>
 										<FormItem className="flex items-center space-x-3 space-y-0">
@@ -274,7 +281,7 @@ export const PitchForm = ({
 								<FormControl>
 									<RadioGroup
 										onValueChange={field.onChange}
-										defaultValue={field.value}
+										value={field.value}
 										className="flex flex-col space-y-1"
 									>
 										<FormItem className="flex items-center space-x-3 space-y-0">
