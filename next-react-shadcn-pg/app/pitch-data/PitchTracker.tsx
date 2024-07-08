@@ -13,6 +13,8 @@ import {
 	orderBy,
 	deleteDoc,
 	doc,
+  Timestamp,
+  where,
 } from "firebase/firestore";
 import PitchCount from "./PitchCount";
 
@@ -21,9 +23,15 @@ async function getPitches(): Promise<Pitch[]> {
 	// maybe a component above the form and this page that gets the pitcher
 	const pitchesCollRef = collection(db, "pitches");
 
-  const today = new Date().
+  const today = new Date();
+  const todayMonth = today.getMonth() + 1;
+  const todayStr = String(today.getFullYear()) + String(todayMonth) + String(today.getDate());
+  const todayTimeStamp: Timestamp = Timestamp.fromDate(new Date(todayStr));
+  console.log(todayStr);
+  console.log(new Date(todayStr));
+  console.log(todayTimeStamp);
 
-	const q = query(pitchesCollRef, orderBy("pitchDate", "desc"));
+	const q = query(pitchesCollRef, where("pitchDate", ">", "todayTimeStamp"), orderBy("pitchDate", "desc"));
 	const data = await getDocs(q);
 	const filteredData = data.docs.map((doc: QueryDocumentSnapshot) => ({
 		...doc.data(),
