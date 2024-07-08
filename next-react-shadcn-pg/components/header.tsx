@@ -1,12 +1,10 @@
 "use client";
-
-import { Auth } from "./auth";
-
+import UserItem from "./user-item";
 
 export default function Header() {
 	return (
-		<div className="flex items-right gap-2 min-w-[300px] p-2 border-b">
-			<Auth/>
+		<div className="flex justify-end gap-2 min-w-screen p-2 border-b">
+			<UserItem/>
 		</div>
 	);
 }

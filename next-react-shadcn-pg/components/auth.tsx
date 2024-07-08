@@ -4,7 +4,8 @@ import { auth, googleProvider } from "@/firebase/clientApp";
 import { signInWithPopup, signOut } from "firebase/auth";
 import { Button } from "./ui/button";
 import { useToast } from "@/components/ui/use-toast";
-import { useState, useEffect } from "react";
+import { useState, useEffect, SetStateAction, Dispatch } from "react";
+
 
 export const Auth = () => {
 	const { toast } = useToast();
@@ -36,7 +37,7 @@ export const Auth = () => {
 		}
 	};
 
-	const [isSignedIn, setIsSignedIn] = useState<boolean>(false);
+  const [isSignedIn, setIsSignedIn] = useState<boolean>(false);
 
 	useEffect(() => {
     console.log(isSignedIn);
