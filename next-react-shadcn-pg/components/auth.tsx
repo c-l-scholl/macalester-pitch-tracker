@@ -4,7 +4,6 @@ import { auth, googleProvider } from "@/firebase/clientApp";
 import { signInWithPopup, signOut } from "firebase/auth";
 import { Button } from "./ui/button";
 import { useToast } from "@/components/ui/use-toast";
-import { SetStateAction, Dispatch } from "react";
 
 interface AuthProps {
   isSignedIn: boolean;
@@ -33,7 +32,15 @@ export const Auth = ({ isSignedIn }: AuthProps) => {
 	const logout = async () => {
 		try {
 			await signOut(auth);
+			toast({
+				description: "You have successfully logged out."
+			});
 		} catch (err) {
+			toast({
+				title: "Uh oh! Something went wrong",
+				description: "Your logout attempt failed. Please try again.",
+				variant: "destructive",
+			});
 			console.error(err);
 		}
 	};
