@@ -4,16 +4,18 @@ import { auth, googleProvider } from "@/firebase/clientApp";
 import { signInWithPopup, signOut } from "firebase/auth";
 import { Button } from "./ui/button";
 import { useToast } from "@/components/ui/use-toast";
-import { useState, useEffect, SetStateAction, Dispatch } from "react";
+import { SetStateAction, Dispatch } from "react";
 
+interface AuthProps {
+  isSignedIn: boolean;
+}
 
-export const Auth = () => {
+export const Auth = ({ isSignedIn }: AuthProps) => {
 	const { toast } = useToast();
 
 	const signInWithGoogle = async () => {
 		try {
 			await signInWithPopup(auth, googleProvider);
-			setIsSignedIn(true);
 			toast({
 				description: "Your sign-in was successful.",
 			});
@@ -31,17 +33,10 @@ export const Auth = () => {
 	const logout = async () => {
 		try {
 			await signOut(auth);
-			setIsSignedIn(false);
 		} catch (err) {
 			console.error(err);
 		}
 	};
-
-  const [isSignedIn, setIsSignedIn] = useState<boolean>(false);
-
-	useEffect(() => {
-    console.log(isSignedIn);
-  }, [isSignedIn]);
 
 	return (
 		<>
