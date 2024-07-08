@@ -1,9 +1,6 @@
 "use client";
 
-import React, {
-	useState,
-	useEffect,
-} from "react";
+import React, { useState, useEffect } from "react";
 import { PitchForm } from "@/components/PitchForm";
 import { Pitch, getPitchColumns } from "./columns";
 import { DataTable } from "@/components/data-table";
@@ -23,6 +20,9 @@ async function getPitches(): Promise<Pitch[]> {
 	// needs to be expanded to take specific pitcher
 	// maybe a component above the form and this page that gets the pitcher
 	const pitchesCollRef = collection(db, "pitches");
+
+  const today = new Date().
+
 	const q = query(pitchesCollRef, orderBy("pitchDate", "desc"));
 	const data = await getDocs(q);
 	const filteredData = data.docs.map((doc: QueryDocumentSnapshot) => ({
@@ -40,16 +40,15 @@ export default function PitchTracker() {
 
 	const onDelete = async (pitch: Pitch) => {
 		setIsLoading(true);
-    onOpenChange(false);
-    try {
-      if (pitch.id != undefined) {
-        const pitchDocToDelete = doc(db, "pitches", pitch.id);
-        await deleteDoc(pitchDocToDelete);
-      }
-    } catch (err) {
-      console.error(err);
-    }
-		
+		onOpenChange(false);
+		try {
+			if (pitch.id != undefined) {
+				const pitchDocToDelete = doc(db, "pitches", pitch.id);
+				await deleteDoc(pitchDocToDelete);
+			}
+		} catch (err) {
+			console.error(err);
+		}
 	};
 
 	const onEdit = (pitch: Pitch) => {
@@ -78,22 +77,21 @@ export default function PitchTracker() {
 
 	return (
 		<div className="flex min-w-screen">
-      <div className="flex-none">
-        <PitchForm
-          setIsLoading={setIsLoading}
-          isChanging={isChanging}
-          selectedPitch={selectedPitch}
-          onOpenChange={onOpenChange}
-        />
-      </div>
-			
+			<div className="flex-none">
+				<PitchForm
+					setIsLoading={setIsLoading}
+					isChanging={isChanging}
+					selectedPitch={selectedPitch}
+					onOpenChange={onOpenChange}
+				/>
+			</div>
 
 			<div className="flex-grow p-4 mx-4">
-        <div className="flex flex-row justify-between items-center mb-2">
-          <h1 className="text-3xl font-bold ">Pitch Data</h1>
-          <PitchCount pitchCount={pitchData.length}/>
-        </div>
-				
+				<div className="flex flex-row justify-between items-center mb-2">
+					<h1 className="text-3xl font-bold ">Pitch Data</h1>
+					<PitchCount pitchCount={pitchData.length} />
+				</div>
+
 				{isLoading && <span>Loading</span>}
 				{!isLoading && <DataTable columns={columns} data={pitchData} />}
 			</div>

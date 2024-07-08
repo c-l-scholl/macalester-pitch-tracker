@@ -28,12 +28,11 @@ const UserLogin = () => {
         </div>
 				
 				{isSignedIn && (
-					<div>
+					<div className="">
 						<Button variant="link" size="lg">
 							<Link href="/pitch-data">
                 To Pitch Tracker
               </Link>
-              <ArrowRight />
 						</Button>
 					</div>
 				)}
