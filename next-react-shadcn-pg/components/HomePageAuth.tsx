@@ -6,10 +6,10 @@ import { Button } from "./ui/button";
 import { useToast } from "@/components/ui/use-toast";
 
 interface AuthProps {
-  isSignedIn: boolean;
+	isSignedIn: boolean;
 }
 
-export const Auth = ({ isSignedIn }: AuthProps) => {
+export const HomePageAuth = ({ isSignedIn }: AuthProps) => {
 	const { toast } = useToast();
 
 	const signInWithGoogle = async () => {
@@ -33,7 +33,7 @@ export const Auth = ({ isSignedIn }: AuthProps) => {
 		try {
 			await signOut(auth);
 			toast({
-				description: "You have successfully logged out."
+				description: "You have successfully logged out.",
 			});
 		} catch (err) {
 			toast({
@@ -50,10 +50,10 @@ export const Auth = ({ isSignedIn }: AuthProps) => {
 			{!isSignedIn && (
 				<div className="flex flex-col m-3 justify-center gap-5">
 					<p>Please sign in before entering Pitch Tracker.</p>
-          <Button onClick={signInWithGoogle}>Sign In With Google</Button>
+					<Button onClick={signInWithGoogle}>Sign In With Google</Button>
 				</div>
 			)}
-      {isSignedIn　&& <Button onClick={logout}>Logout</Button>}
+			{isSignedIn && <Button onClick={logout}>Logout</Button>}
 		</>
 	);
 };

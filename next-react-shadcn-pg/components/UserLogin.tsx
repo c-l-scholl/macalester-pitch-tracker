@@ -2,12 +2,11 @@
 
 import Link from "next/link";
 
-import { Auth } from "./auth";
-import { Button, buttonVariants } from "./ui/button";
+import { HomePageAuth } from "./HomePageAuth";
+import { Button } from "./ui/button";
 import { auth } from "@/firebase/clientApp";
 import { onAuthStateChanged } from "firebase/auth";
 import { useState } from "react";
-import { ArrowRight } from "lucide-react";
 
 const UserLogin = () => {
 	const [isSignedIn, setIsSignedIn] = useState<boolean>(false);
@@ -24,7 +23,7 @@ const UserLogin = () => {
 		<>
 			<div className="flex flex-col min-h-screen min-w-screen justify-center items-center gap-2">
         <div>
-          <Auth isSignedIn={isSignedIn} />
+          <HomePageAuth isSignedIn={isSignedIn} />
         </div>
 				
 				{isSignedIn && (

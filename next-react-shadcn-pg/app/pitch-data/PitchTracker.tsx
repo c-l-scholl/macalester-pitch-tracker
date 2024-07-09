@@ -17,6 +17,7 @@ import {
 	where,
 } from "firebase/firestore";
 import PitchCount from "./PitchCount";
+import { useToast } from "@/components/ui/use-toast";
 
 const getTodayTimestamp = (): Timestamp => {
   const todayStart = new Date();
@@ -44,6 +45,9 @@ async function getPitches(): Promise<Pitch[]> {
 }
 
 export default function PitchTracker() {
+  
+  const { toast } = useToast();
+
 	const [isLoading, setIsLoading] = useState<boolean>(false);
 	const [pitchData, setPitchData] = useState<Pitch[]>([]);
 	const [isChanging, setIsChanging] = useState<boolean>(false);
@@ -56,9 +60,16 @@ export default function PitchTracker() {
 			if (pitch.id != undefined) {
 				const pitchDocToDelete = doc(db, "pitches", pitch.id);
 				await deleteDoc(pitchDocToDelete);
+        toast({
+          description: "Pitch deleted successfully",
+        });
 			}
 		} catch (err) {
-			console.error(err);
+			toast({
+        title: "Uh oh! Something went wrong.",
+        description: "There was a problem with your pitch deletion attempt. Please try again.",
+        variant: "destructive",
+      });
 		}
 	};
 

@@ -26,6 +26,7 @@ import { db } from "@/firebase/clientApp";
 import { auth } from "@/firebase/clientApp";
 import { Dispatch, SetStateAction, useEffect } from "react";
 import { Pitch } from "@/app/pitch-data/columns";
+import { useToast } from "./ui/use-toast";
 
 const formSchema = z.object({
 	pitcher: z.string().min(2, {
@@ -58,6 +59,8 @@ export const PitchForm = ({
 	isChanging,
 	onOpenChange,
 }: PitchFormProps) => {
+
+  const { toast } = useToast();
 	// 1. Define your form.
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
@@ -106,8 +109,15 @@ export const PitchForm = ({
 					// now there is user connected with each pitch
 					userId: auth?.currentUser?.email,
 				});
+        toast({
+          description: "Pitch added successfully."
+        });
 			} catch (err) {
-				console.error(err);
+        toast({
+          title: "Uh oh! Something went wrong.",
+          description: "There was a problem with your pitch submission attempt. Please try again.",
+          variant: "destructive",
+        });
 				setIsLoading(false);
 			}
 		} else {
@@ -124,9 +134,16 @@ export const PitchForm = ({
 						},
 						{ merge: true }
 					);
+          toast({
+            description: "Pitch updated successfully"
+          });
 				}
 			} catch (err) {
-				console.error(err);
+        toast({
+          title: "Uh oh! Something went wrong.",
+          description: "There was a problem with your pitch update attempt. Please try again.",
+          variant: "destructive",
+        });
 				setIsLoading(false);
 			}
 		}
@@ -134,7 +151,10 @@ export const PitchForm = ({
 
     // could change this later for better efficiency
     // need to call here because of async
-    form.reset();
+    // form.reset();
+    form.resetField("pitchType", { defaultValue: "FB" });
+		form.resetField("velocity", { defaultValue: 50 });
+		form.resetField("contact", { defaultValue: "Ball" });
 	}
 
 	return (
