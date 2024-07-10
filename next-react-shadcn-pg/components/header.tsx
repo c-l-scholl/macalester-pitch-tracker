@@ -3,19 +3,15 @@ import Link from "next/link";
 import UserItem from "./user-item";
 import {
 	NavigationMenu,
-	NavigationMenuContent,
-	NavigationMenuIndicator,
 	NavigationMenuItem,
 	NavigationMenuLink,
 	NavigationMenuList,
-	NavigationMenuTrigger,
 	navigationMenuTriggerStyle,
-	NavigationMenuViewport,
 } from "@/components/ui/navigation-menu";
 
 export default function Header() {
 	return (
-		<div className="flex flex-row justify-between gap-2 min-w-screen p-2 border-b items-center">
+		<div className="flex flex-row justify-between gap-2 min-w-screen p-4 border-b items-center bg-slate-100 shadow-md">
 			<div>
 				<NavigationMenu>
 					<NavigationMenuList>

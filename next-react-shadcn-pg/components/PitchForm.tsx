@@ -14,17 +14,27 @@ import {
 	FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { RadioGroup, RadioGroupItem } from "./ui/radio-group";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
+import {
+	QueryDocumentSnapshot,
 	Timestamp,
 	addDoc,
 	collection,
 	doc,
+	getDocs,
+	orderBy,
+	query,
 	setDoc,
 } from "firebase/firestore";
-import { db } from "@/firebase/clientApp";
-import { auth } from "@/firebase/clientApp";
-import { Dispatch, SetStateAction, useEffect } from "react";
+import { db, auth } from "@/firebase/clientApp";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { Pitch } from "@/app/pitch-data/columns";
 import { useToast } from "./ui/use-toast";
 
@@ -51,6 +61,13 @@ interface PitchFormProps {
 	onOpenChange: (value: boolean) => void;
 	selectedPitch: Pitch | null;
 	isChanging: boolean;
+	pitcherList: Pitcher[] | null;
+}
+
+interface Pitcher {
+	playerNumber: number;
+	fullName: string;
+	id?: string;
 }
 
 export const PitchForm = ({
@@ -58,9 +75,10 @@ export const PitchForm = ({
 	selectedPitch,
 	isChanging,
 	onOpenChange,
+	pitcherList,
 }: PitchFormProps) => {
+	const { toast } = useToast();
 
-  const { toast } = useToast();
 	// 1. Define your form.
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
@@ -109,15 +127,16 @@ export const PitchForm = ({
 					// now there is user connected with each pitch
 					userId: auth?.currentUser?.email,
 				});
-        toast({
-          description: "Pitch added successfully."
-        });
+				toast({
+					description: "Pitch added successfully.",
+				});
 			} catch (err) {
-        toast({
-          title: "Uh oh! Something went wrong.",
-          description: "There was a problem with your pitch submission attempt. Please try again.",
-          variant: "destructive",
-        });
+				toast({
+					title: "Uh oh! Something went wrong.",
+					description:
+						"There was a problem with your pitch submission attempt. Please try again.",
+					variant: "destructive",
+				});
 				setIsLoading(false);
 			}
 		} else {
@@ -134,25 +153,26 @@ export const PitchForm = ({
 						},
 						{ merge: true }
 					);
-          toast({
-            description: "Pitch updated successfully"
-          });
+					toast({
+						description: "Pitch updated successfully",
+					});
 				}
 			} catch (err) {
-        toast({
-          title: "Uh oh! Something went wrong.",
-          description: "There was a problem with your pitch update attempt. Please try again.",
-          variant: "destructive",
-        });
+				toast({
+					title: "Uh oh! Something went wrong.",
+					description:
+						"There was a problem with your pitch update attempt. Please try again.",
+					variant: "destructive",
+				});
 				setIsLoading(false);
 			}
 		}
 		onOpenChange(false);
 
-    // could change this later for better efficiency
-    // need to call here because of async
-    // form.reset();
-    form.resetField("pitchType", { defaultValue: "FB" });
+		// could change this later for better efficiency
+		// need to call here because of async
+		// form.reset();
+		form.resetField("pitchType", { defaultValue: "FB" });
 		form.resetField("velocity", { defaultValue: 50 });
 		form.resetField("contact", { defaultValue: "Ball" });
 	}
@@ -173,9 +193,21 @@ export const PitchForm = ({
 						render={({ field }) => (
 							<FormItem>
 								<FormLabel>Pitcher</FormLabel>
-								<FormControl>
-									<Input placeholder="Pitcher Name" {...field} />
-								</FormControl>
+								<Select onValueChange={field.onChange} value={field.value}>
+									<FormControl>
+										<SelectTrigger>
+											<SelectValue placeholder="Select a pitcher" />
+										</SelectTrigger>
+									</FormControl>
+									<SelectContent>
+										{pitcherList && pitcherList.map((pitcher: Pitcher) => (
+											<SelectItem
+												key={pitcher.id}
+												value={pitcher.fullName}
+											>{`${pitcher.playerNumber} ${pitcher.fullName}`}</SelectItem>
+										))}
+									</SelectContent>
+								</Select>
 								<FormMessage />
 							</FormItem>
 						)}
@@ -244,50 +276,46 @@ export const PitchForm = ({
 										value={field.value}
 										className="flex flex-row space-x-2"
 									>
-                    <div className="flex-col space-y-2">
-                      <FormItem className="flex items-center space-x-3 space-y-0">
-                        <FormControl>
-                          <RadioGroupItem value="FB" />
-                        </FormControl>
-                        <FormLabel className="font-normal">
-                          4-seam FB
-                        </FormLabel>
-                      </FormItem>
-                      <FormItem className="flex items-center space-x-3 space-y-0">
-                        <FormControl>
-                          <RadioGroupItem value="2S" />
-                        </FormControl>
-                        <FormLabel className="font-normal">
-                          2-seam FB
-                        </FormLabel>
-                      </FormItem>
-                      <FormItem className="flex items-center space-x-3 space-y-0">
-                        <FormControl>
-                          <RadioGroupItem value="CH" />
-                        </FormControl>
-                        <FormLabel className="font-normal">Change-up</FormLabel>
-                      </FormItem>
-                    </div>
 										<div className="flex-col space-y-2">
-                      <FormItem className="flex items-center space-x-3 space-y-0">
-                        <FormControl>
-                          <RadioGroupItem value="SL" />
-                        </FormControl>
-                        <FormLabel className="font-normal">Slider</FormLabel>
-                      </FormItem>
-                      <FormItem className="flex items-center space-x-3 space-y-0">
-                        <FormControl>
-                          <RadioGroupItem value="CB" />
-                        </FormControl>
-                        <FormLabel className="font-normal">Curveball</FormLabel>
-                      </FormItem>
-                      <FormItem className="flex items-center space-x-3 space-y-0">
-                        <FormControl>
-                          <RadioGroupItem value="Other" />
-                        </FormControl>
-                        <FormLabel className="font-normal">Other</FormLabel>
-                      </FormItem>
-                    </div>
+											<FormItem className="flex items-center space-x-3 space-y-0">
+												<FormControl>
+													<RadioGroupItem value="FB" />
+												</FormControl>
+												<FormLabel className="font-normal">4-seam FB</FormLabel>
+											</FormItem>
+											<FormItem className="flex items-center space-x-3 space-y-0">
+												<FormControl>
+													<RadioGroupItem value="2S" />
+												</FormControl>
+												<FormLabel className="font-normal">2-seam FB</FormLabel>
+											</FormItem>
+											<FormItem className="flex items-center space-x-3 space-y-0">
+												<FormControl>
+													<RadioGroupItem value="CH" />
+												</FormControl>
+												<FormLabel className="font-normal">Change-up</FormLabel>
+											</FormItem>
+										</div>
+										<div className="flex-col space-y-2">
+											<FormItem className="flex items-center space-x-3 space-y-0">
+												<FormControl>
+													<RadioGroupItem value="SL" />
+												</FormControl>
+												<FormLabel className="font-normal">Slider</FormLabel>
+											</FormItem>
+											<FormItem className="flex items-center space-x-3 space-y-0">
+												<FormControl>
+													<RadioGroupItem value="CB" />
+												</FormControl>
+												<FormLabel className="font-normal">Curveball</FormLabel>
+											</FormItem>
+											<FormItem className="flex items-center space-x-3 space-y-0">
+												<FormControl>
+													<RadioGroupItem value="Other" />
+												</FormControl>
+												<FormLabel className="font-normal">Other</FormLabel>
+											</FormItem>
+										</div>
 									</RadioGroup>
 								</FormControl>
 								<FormMessage />
@@ -306,58 +334,58 @@ export const PitchForm = ({
 										value={field.value}
 										className="flex flex-row space-x-2"
 									>
-                    <div className="flex-col space-y-2">
-                      <FormItem className="flex items-center space-x-3 space-y-0">
-                        <FormControl>
-                          <RadioGroupItem value="Ball" />
-                        </FormControl>
-                        <FormLabel className="font-normal">Ball</FormLabel>
-                      </FormItem>
-                      <FormItem className="flex items-center space-x-3 space-y-0">
-                        <FormControl>
-                          <RadioGroupItem value="Strike" />
-                        </FormControl>
-                        <FormLabel className="font-normal">Strike</FormLabel>
-                      </FormItem>
-                      <FormItem className="flex items-center space-x-3 space-y-0">
-                        <FormControl>
-                          <RadioGroupItem value="Foul" />
-                        </FormControl>
-                        <FormLabel className="font-normal">Foul</FormLabel>
-                      </FormItem>
-                      <FormItem className="flex items-center space-x-3 space-y-0">
-                        <FormControl>
-                          <RadioGroupItem value="Out" />
-                        </FormControl>
-                        <FormLabel className="font-normal">Out</FormLabel>
-                      </FormItem>
-                    </div>
-                    <div className="flex-col space-y-2">
-                      <FormItem className="flex items-center space-x-3 space-y-0">
-                        <FormControl>
-                          <RadioGroupItem value="H" />
-                        </FormControl>
-                        <FormLabel className="font-normal">Single</FormLabel>
-                      </FormItem>
-                      <FormItem className="flex items-center space-x-3 space-y-0">
-                        <FormControl>
-                          <RadioGroupItem value="2B" />
-                        </FormControl>
-                        <FormLabel className="font-normal">Double</FormLabel>
-                      </FormItem>
-                      <FormItem className="flex items-center space-x-3 space-y-0">
-                        <FormControl>
-                          <RadioGroupItem value="3B" />
-                        </FormControl>
-                        <FormLabel className="font-normal">Triple</FormLabel>
-                      </FormItem>
-                      <FormItem className="flex items-center space-x-3 space-y-0">
-                        <FormControl>
-                          <RadioGroupItem value="HR" />
-                        </FormControl>
-                        <FormLabel className="font-normal">Homerun</FormLabel>
-                      </FormItem>
-                    </div>
+										<div className="flex-col space-y-2">
+											<FormItem className="flex items-center space-x-3 space-y-0">
+												<FormControl>
+													<RadioGroupItem value="Ball" />
+												</FormControl>
+												<FormLabel className="font-normal">Ball</FormLabel>
+											</FormItem>
+											<FormItem className="flex items-center space-x-3 space-y-0">
+												<FormControl>
+													<RadioGroupItem value="Strike" />
+												</FormControl>
+												<FormLabel className="font-normal">Strike</FormLabel>
+											</FormItem>
+											<FormItem className="flex items-center space-x-3 space-y-0">
+												<FormControl>
+													<RadioGroupItem value="Foul" />
+												</FormControl>
+												<FormLabel className="font-normal">Foul</FormLabel>
+											</FormItem>
+											<FormItem className="flex items-center space-x-3 space-y-0">
+												<FormControl>
+													<RadioGroupItem value="Out" />
+												</FormControl>
+												<FormLabel className="font-normal">Out</FormLabel>
+											</FormItem>
+										</div>
+										<div className="flex-col space-y-2">
+											<FormItem className="flex items-center space-x-3 space-y-0">
+												<FormControl>
+													<RadioGroupItem value="H" />
+												</FormControl>
+												<FormLabel className="font-normal">Single</FormLabel>
+											</FormItem>
+											<FormItem className="flex items-center space-x-3 space-y-0">
+												<FormControl>
+													<RadioGroupItem value="2B" />
+												</FormControl>
+												<FormLabel className="font-normal">Double</FormLabel>
+											</FormItem>
+											<FormItem className="flex items-center space-x-3 space-y-0">
+												<FormControl>
+													<RadioGroupItem value="3B" />
+												</FormControl>
+												<FormLabel className="font-normal">Triple</FormLabel>
+											</FormItem>
+											<FormItem className="flex items-center space-x-3 space-y-0">
+												<FormControl>
+													<RadioGroupItem value="HR" />
+												</FormControl>
+												<FormLabel className="font-normal">Homerun</FormLabel>
+											</FormItem>
+										</div>
 									</RadioGroup>
 								</FormControl>
 								<FormMessage />

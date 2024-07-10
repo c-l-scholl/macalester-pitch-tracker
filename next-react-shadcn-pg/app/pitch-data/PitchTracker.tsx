@@ -19,11 +19,17 @@ import {
 import PitchCount from "./PitchCount";
 import { useToast } from "@/components/ui/use-toast";
 
+export type Pitcher = {
+	id: string;
+	fullName: string;
+	playerNumber: number;
+}
+
 const getTodayTimestamp = (): Timestamp => {
-  const todayStart = new Date();
+	const todayStart = new Date();
 	todayStart.setHours(0, 0, 0, 0);
-  const todayTimestamp: Timestamp = Timestamp.fromDate(todayStart);
-  return todayTimestamp;
+	const todayTimestamp: Timestamp = Timestamp.fromDate(todayStart);
+	return todayTimestamp;
 };
 
 async function getPitches(): Promise<Pitch[]> {
@@ -44,12 +50,25 @@ async function getPitches(): Promise<Pitch[]> {
 	return filteredData;
 }
 
+const getPitcherList = async (): Promise<Pitcher[]> => {
+	const pitcherCollRef = collection(db, "pitcher");
+	const q = query(pitcherCollRef, orderBy("playerNumber", "asc"));
+	const pitcherData = await getDocs(q);
+	const filteredPitcherData = pitcherData.docs.map(
+		(doc: QueryDocumentSnapshot) => ({
+			...doc.data(),
+			id: doc.id,
+		})
+	) as Pitcher[];
+	return filteredPitcherData;
+};
+
 export default function PitchTracker() {
-  
-  const { toast } = useToast();
+	const { toast } = useToast();
 
 	const [isLoading, setIsLoading] = useState<boolean>(false);
 	const [pitchData, setPitchData] = useState<Pitch[]>([]);
+	const [pitcherData, setPitcherData] = useState<Pitcher[]>([]);
 	const [isChanging, setIsChanging] = useState<boolean>(false);
 	const [selectedPitch, setSelectedPitch] = useState<Pitch | null>(null);
 
@@ -60,16 +79,17 @@ export default function PitchTracker() {
 			if (pitch.id != undefined) {
 				const pitchDocToDelete = doc(db, "pitches", pitch.id);
 				await deleteDoc(pitchDocToDelete);
-        toast({
-          description: "Pitch deleted successfully",
-        });
+				toast({
+					description: "Pitch deleted successfully",
+				});
 			}
 		} catch (err) {
 			toast({
-        title: "Uh oh! Something went wrong.",
-        description: "There was a problem with your pitch deletion attempt. Please try again.",
-        variant: "destructive",
-      });
+				title: "Uh oh! Something went wrong.",
+				description:
+					"There was a problem with your pitch deletion attempt. Please try again.",
+				variant: "destructive",
+			});
 		}
 	};
 
@@ -94,8 +114,16 @@ export default function PitchTracker() {
 			setIsLoading(false);
 		};
 
+		const getPitcherData = async () => {
+			const pitcherList = await getPitcherList();
+			setPitcherData(pitcherList);
+		}
+
 		getPitchData();
-	}, [isLoading]);
+		if (pitcherData.length === 0) {
+			getPitcherData();
+		}
+	}, [isLoading, pitcherData]);
 
 	return (
 		<div className="flex min-w-screen">
@@ -105,6 +133,7 @@ export default function PitchTracker() {
 					isChanging={isChanging}
 					selectedPitch={selectedPitch}
 					onOpenChange={onOpenChange}
+					pitcherList={pitcherData}
 				/>
 			</div>
 
