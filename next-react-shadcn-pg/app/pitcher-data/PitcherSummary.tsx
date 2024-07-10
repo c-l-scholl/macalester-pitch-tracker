@@ -18,6 +18,7 @@ import {
 } from "firebase/firestore";
 import { useToast } from "@/components/ui/use-toast";
 import PitchCount from "../pitch-tracker/PitchCount";
+import PitcherSelect from "./PitcherSelect";
 
 export type Pitcher = {
 	id: string;
@@ -92,7 +93,7 @@ export default function PitchTracker() {
 			});
 		}
 	};
-
+	// maybe change on edit to only take pitch type
 	const onEdit = (pitch: FullPitchData) => {
 		setSelectedPitch(pitch);
 		setIsChanging(true);
@@ -128,6 +129,7 @@ export default function PitchTracker() {
 	return (
 		<div className="flex min-w-screen">
 			<div className="flex-none">
+				<PitcherSelect pitcherList={pitcherData}/>
 				{/* select pitcher thing here */}
 				{/* side bar here */}
 			</div>

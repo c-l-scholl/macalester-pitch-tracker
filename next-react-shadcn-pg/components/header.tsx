@@ -11,7 +11,7 @@ import {
 
 export default function Header() {
 	return (
-		<div className="flex flex-row justify-between gap-2 min-w-screen p-4 border-b items-center bg-slate-100 shadow-md">
+		<div className="sticky top-0 flex flex-row justify-between gap-2 min-w-screen p-4 border-b items-center bg-slate-100 shadow-md z-50">
 			<div>
 				<NavigationMenu>
 					<NavigationMenuList>
