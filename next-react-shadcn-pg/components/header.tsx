@@ -24,9 +24,17 @@ export default function Header() {
 						</NavigationMenuItem>
 						<NavigationMenuItem>
 							{/* Add something here to block nav if not signed in */}
-							<Link href="/pitch-data" legacyBehavior passHref>
+							<Link href="/pitch-tracker" legacyBehavior passHref>
 								<NavigationMenuLink className={navigationMenuTriggerStyle()}>
 									Pitch Tracker
+								</NavigationMenuLink>
+							</Link>
+						</NavigationMenuItem>
+						<NavigationMenuItem>
+							{/* Add something here to block nav if not signed in */}
+							<Link href="/pitcher-data" legacyBehavior passHref>
+								<NavigationMenuLink className={navigationMenuTriggerStyle()}>
+									Pitcher Data
 								</NavigationMenuLink>
 							</Link>
 						</NavigationMenuItem>

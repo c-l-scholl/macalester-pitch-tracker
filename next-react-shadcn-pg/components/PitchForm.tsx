@@ -35,7 +35,7 @@ import {
 } from "firebase/firestore";
 import { db, auth } from "@/firebase/clientApp";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
-import { Pitch } from "@/app/pitch-data/columns";
+import { Pitch } from "@/app/pitch-tracker/columns";
 import { useToast } from "./ui/use-toast";
 
 const formSchema = z.object({

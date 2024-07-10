@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { PitchForm } from "@/components/PitchForm";
 import { Pitch, getPitchColumns } from "./columns";
-import { DataTable } from "@/components/data-table";
+import { DataTable } from "@/components/TrackerDataTable";
 import { db } from "@/firebase/clientApp";
 import {
 	getDocs,
