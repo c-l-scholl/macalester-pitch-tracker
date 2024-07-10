@@ -25,7 +25,7 @@ export type Pitcher = {
 	id: string;
 	fullName: string;
 	playerNumber: number;
-}
+};
 
 const getTodayTimestamp = (): Timestamp => {
 	const todayStart = new Date();
@@ -72,7 +72,10 @@ export default function PitchTracker() {
 	const [pitchData, setPitchData] = useState<FullPitchData[]>([]);
 	const [pitcherData, setPitcherData] = useState<Pitcher[]>([]);
 	const [isChanging, setIsChanging] = useState<boolean>(false);
-	const [selectedPitch, setSelectedPitch] = useState<FullPitchData | null>(null);
+	const [selectedPitch, setSelectedPitch] = useState<FullPitchData | null>(
+		null
+	);
+	const [selectedPitcher, setSelectedPitcher] = useState<Pitcher | null>(null);
 
 	const onDelete = async (pitch: FullPitchData) => {
 		setIsLoading(true);
@@ -119,7 +122,7 @@ export default function PitchTracker() {
 		const getPitcherData = async () => {
 			const pitcherList = await getPitcherList();
 			setPitcherData(pitcherList);
-		}
+		};
 
 		getPitchData();
 		if (pitcherData.length === 0) {
@@ -130,8 +133,17 @@ export default function PitchTracker() {
 	return (
 		<div className="flex flex-row">
 			<div className="sticky flex flex-col gap-2 w-[300px] min-w-[300px] border-r min-h-screen p-4">
-				<PitcherSelect pitcherList={pitcherData}/>
-				<SplitsData selectedPitcher="Camden Scholl"/>
+				<PitcherSelect
+					pitcherList={pitcherData}
+					setSelectedPitcher={setSelectedPitcher}
+				/>
+				<SplitsData
+					selectedPitcher={
+						selectedPitcher && selectedPitcher !== null
+							? selectedPitcher.fullName
+							: ""
+					}
+				/>
 				{/* select pitcher thing here */}
 				{/* side bar here */}
 			</div>
@@ -139,7 +151,7 @@ export default function PitchTracker() {
 			<div className="flex-grow p-4 mx-4">
 				<div className="flex flex-row justify-between items-center mb-2">
 					<h1 className="text-3xl font-bold ">Pitcher Data</h1>
-					<PitchCount pitchCount={pitchData.length}/>
+					<PitchCount pitchCount={pitchData.length} />
 				</div>
 
 				{isLoading && <span>Loading</span>}

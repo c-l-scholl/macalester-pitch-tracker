@@ -9,12 +9,14 @@ import {
 } from "@/components/ui/select";
 
 import { Pitcher } from "./PitcherSummary";
+import { Dispatch, SetStateAction } from "react";
 
 interface PitcherSelectProps {
 	pitcherList: Pitcher[];
+	setSelectedPitcher: Dispatch<SetStateAction<Pitcher | null>>;
 }
 
-const PitcherSelect = ({ pitcherList }: PitcherSelectProps) => {
+const PitcherSelect = ({ pitcherList, setSelectedPitcher }: PitcherSelectProps) => {
 	return (
 		<div>
 			<Select>
@@ -27,6 +29,10 @@ const PitcherSelect = ({ pitcherList }: PitcherSelectProps) => {
 							<SelectItem
 								key={pitcher.id}
 								value={pitcher.fullName}
+								onSelect={() => {
+									setSelectedPitcher(pitcher);
+									console.log(pitcher.fullName);
+								}}
 							>{`${pitcher.playerNumber} ${pitcher.fullName}`}</SelectItem>
 						))}
 				</SelectContent>

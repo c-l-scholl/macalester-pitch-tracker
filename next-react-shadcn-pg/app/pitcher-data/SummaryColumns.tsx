@@ -33,7 +33,7 @@ export const getFullPitchDataColumns = ({
 		cell: ({ row }) => {
 			const rowTimestamp: Timestamp = row.getValue("pitchDate");
 			const rowDate = rowTimestamp.toDate();
-			const formatted = `${rowDate.getDate()}/${rowDate.getMonth() + 1}/${rowDate.getFullYear()}`;
+			const formatted = `${rowDate.getMonth() + 1}/${rowDate.getDate()}/${rowDate.getFullYear()}`;
 			return <div className="text-left font-medium">{formatted}</div>;
 		},
 	},
