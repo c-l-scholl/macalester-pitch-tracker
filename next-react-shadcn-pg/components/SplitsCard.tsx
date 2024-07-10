@@ -3,6 +3,7 @@
 import { db } from "@/firebase/clientApp";
 import {
 	collection,
+	CollectionReference,
 	getDocs,
 	query,
 	QueryDocumentSnapshot,
@@ -19,13 +20,11 @@ import {
 	CardTitle,
 } from "@/components/ui/card";
 
-const getSpecificPitchData = async (pitcherName: string, type: string, batter: string) => {
-	const pitchesCollRef = collection(db, "pitches");
-
-	// console.log(pitcherName);
+const getSpecificPitchData = async (pitcherName: string, type: string, batter: string, collRef: CollectionReference) => {
+	
 
 	const q = query(
-		pitchesCollRef,
+		collRef,
 		where("pitchType", "==", type),
 		where("batterHand", "==", batter),
 		where("fullName", "==", pitcherName),
@@ -47,22 +46,24 @@ interface SplitsCardProps {
 const SplitsCard = ({ pitchType, selectedPitcherName }: SplitsCardProps) => {
 	const [rStats, setRstats] = useState<FullPitchData[]>([]);
 	const [lStats, setLstats] = useState<FullPitchData[]>([]);
-	const [show, setShow] = useState<boolean>(true);
+	const [show, setShow] = useState<boolean>(false);
+
+	const pitchesCollRef = collection(db, "pitches");
 
 	useEffect(() => {
 		const getData = async () => {
-			const rd = await getSpecificPitchData(selectedPitcherName, pitchType, "Right");
-			const ld = await getSpecificPitchData(selectedPitcherName, pitchType, "Left");
+			const rd = await getSpecificPitchData(selectedPitcherName, pitchType, "Right", pitchesCollRef);
+			const ld = await getSpecificPitchData(selectedPitcherName, pitchType, "Left", pitchesCollRef);
 			if (rd.length === 0 && ld.length === 0) {
 				setShow(false);
+			} else {
+				setShow(true);
 			}
 			setRstats(rd);
 			setLstats(ld);
 		};
-		if (rStats?.length === 0 || lStats?.length === 0) {
-			getData();
-		}
-	}, [rStats, lStats, pitchType, selectedPitcherName]);
+		getData();
+	}, [pitchType, selectedPitcherName, pitchesCollRef]);
 
 	// Calculate Strike percentage
 	let rfStrikes: number = 0;
@@ -171,14 +172,14 @@ const SplitsCard = ({ pitchType, selectedPitcherName }: SplitsCardProps) => {
 				<Card>
 					<CardHeader>
 						<CardTitle>{pitchType}</CardTitle>
-						<CardDescription>Summary Stats</CardDescription>
+						<CardDescription>Stat: vs. Lefty / vs. Righty</CardDescription>
 					</CardHeader>
 					<CardContent>
-						<p>K% Splits: {`${Math.round((10000 * lfStrikes) / lPitches) / 100}% / 
+						<p>K%: {`${Math.round((10000 * lfStrikes) / lPitches) / 100}% / 
 														${Math.round((10000 * rfStrikes) / rPitches) / 100}%`}</p>
 					</CardContent>
 					<CardContent>
-						<p>SLG Splits: {`${lSLGStr} / ${rSLGStr}`}</p>
+						<p>SLG: {`${lSLGStr} / ${rSLGStr}`}</p>
 					</CardContent>
 				</Card>
 			</div>}

@@ -20,6 +20,7 @@ import { useToast } from "@/components/ui/use-toast";
 import PitchCount from "../pitch-tracker/PitchCount";
 import PitcherSelect from "./PitcherSelect";
 import SplitsData from "./SplitsData";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 export type Pitcher = {
 	id: string;
@@ -75,7 +76,7 @@ export default function PitchTracker() {
 	const [selectedPitch, setSelectedPitch] = useState<FullPitchData | null>(
 		null
 	);
-	const [selectedPitcher, setSelectedPitcher] = useState<Pitcher | null>(null);
+	const [selectedPitcherName, setSelectedPitcherName] = useState<string>("");
 
 	const onDelete = async (pitch: FullPitchData) => {
 		setIsLoading(true);
@@ -133,19 +134,28 @@ export default function PitchTracker() {
 	return (
 		<div className="flex flex-row">
 			<div className="sticky flex flex-col gap-2 w-[300px] min-w-[300px] border-r min-h-screen p-4">
-				<PitcherSelect
+				{/* <PitcherSelect
 					pitcherList={pitcherData}
 					setSelectedPitcher={setSelectedPitcher}
-				/>
+				/> */}
+				<Select onValueChange={(value: string) => setSelectedPitcherName(value)}>
+					<SelectTrigger className="w-[180px]">
+						<SelectValue placeholder="Select a pitcher..." />
+					</SelectTrigger>
+					<SelectContent>
+						{pitcherData &&
+							pitcherData.map((pitcher: Pitcher) => (
+								<SelectItem
+									key={pitcher.id}
+									value={pitcher.fullName}
+									
+								>{`${pitcher.playerNumber} ${pitcher.fullName}`}</SelectItem>
+							))}
+					</SelectContent>
+				</Select>
 				<SplitsData
-					selectedPitcher={
-						selectedPitcher && selectedPitcher !== null
-							? selectedPitcher.fullName
-							: ""
-					}
+					selectedPitcherName={selectedPitcherName}
 				/>
-				{/* select pitcher thing here */}
-				{/* side bar here */}
 			</div>
 
 			<div className="flex-grow p-4 mx-4">
