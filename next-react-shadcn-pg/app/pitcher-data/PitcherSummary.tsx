@@ -44,19 +44,12 @@ async function getPitches(pitcherName: string): Promise<FullPitchData[]> {
 	// maybe a component above the form and this page that gets the pitcher
 	const pitchesCollRef = collection(db, "pitches");
 
-	let q = null;
-	if (pitcherName !== "") {
-		q = query(
-			pitchesCollRef,
-			where("fullName", "==", "pitcherName"),
-			orderBy("pitchDate", "desc")
-		);
-	} else {
-		q = query(
-			pitchesCollRef,
-			orderBy("pitchDate", "desc")
-		);
-	}
+	const q = query(
+		pitchesCollRef,
+		where("fullName", "==", "pitcherName"),
+		orderBy("pitchDate", "desc")
+	);
+
 	const data = await getDocs(q);
 	const filteredData = data.docs.map((doc: QueryDocumentSnapshot) => ({
 		...doc.data(),

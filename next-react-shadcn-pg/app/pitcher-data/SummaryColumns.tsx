@@ -1,8 +1,10 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
+import { ArrowUpDown } from "lucide-react";
 import DataTableRowActions from "@/components/DataTableRowActions";
 import { Timestamp } from "firebase/firestore";
+import { Button } from "@/components/ui/button";
 
 export type FullPitchData = {
 	id: string;
@@ -29,7 +31,16 @@ export const getFullPitchDataColumns = ({
 	},
 	{
 		accessorKey: "pitchDate",
-		header: "Date",
+		header: ({ column }) => {
+			return (
+				<Button
+					variant="ghost"
+					onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
+						Date
+						<ArrowUpDown className="ml-2 h-4 w-4"/>
+				</Button>
+			)
+		},
 		cell: ({ row }) => {
 			const rowTimestamp: Timestamp = row.getValue("pitchDate");
 			const rowDate = rowTimestamp.toDate();
@@ -52,7 +63,7 @@ export const getFullPitchDataColumns = ({
 	},
 	{
 		accessorKey: "pitchType",
-		header: "Pitch",
+		header: "Pitch Type",
 	},
 	{
 		accessorKey: "result",
