@@ -19,6 +19,7 @@ import {
 import { useToast } from "@/components/ui/use-toast";
 import PitchCount from "../pitch-tracker/PitchCount";
 import PitcherSelect from "./PitcherSelect";
+import SplitsData from "./SplitsData";
 
 export type Pitcher = {
 	id: string;
@@ -127,9 +128,10 @@ export default function PitchTracker() {
 	}, [isLoading, pitcherData]);
 
 	return (
-		<div className="flex min-w-screen">
-			<div className="flex-none">
+		<div className="flex flex-row">
+			<div className="sticky flex flex-col gap-2 w-[300px] min-w-[300px] border-r min-h-screen p-4">
 				<PitcherSelect pitcherList={pitcherData}/>
+				<SplitsData/>
 				{/* select pitcher thing here */}
 				{/* side bar here */}
 			</div>
