@@ -13,6 +13,7 @@ import {
 	deleteDoc,
 	doc,
 	Timestamp,
+	where,
 } from "firebase/firestore";
 import { useToast } from "@/components/ui/use-toast";
 import PitchCount from "../pitch-tracker/PitchCount";
@@ -31,23 +32,31 @@ export type Pitcher = {
 	playerNumber: number;
 };
 
-const getTodayTimestamp = (): Timestamp => {
-	const todayStart = new Date();
-	todayStart.setHours(0, 0, 0, 0);
-	const todayTimestamp: Timestamp = Timestamp.fromDate(todayStart);
-	return todayTimestamp;
-};
+// const getTodayTimestamp = (): Timestamp => {
+// 	const todayStart = new Date();
+// 	todayStart.setHours(0, 0, 0, 0);
+// 	const todayTimestamp: Timestamp = Timestamp.fromDate(todayStart);
+// 	return todayTimestamp;
+// };
 
-async function getPitches(): Promise<FullPitchData[]> {
+async function getPitches(pitcherName: string): Promise<FullPitchData[]> {
 	// needs to be expanded to take specific pitcher
 	// maybe a component above the form and this page that gets the pitcher
 	const pitchesCollRef = collection(db, "pitches");
 
-	const q = query(
-		pitchesCollRef,
-		// where("pitchDate", ">=", getTodayTimestamp()),
-		orderBy("pitchDate", "desc")
-	);
+	let q = null;
+	if (pitcherName !== "") {
+		q = query(
+			pitchesCollRef,
+			where("fullName", "==", "pitcherName"),
+			orderBy("pitchDate", "desc")
+		);
+	} else {
+		q = query(
+			pitchesCollRef,
+			orderBy("pitchDate", "desc")
+		);
+	}
 	const data = await getDocs(q);
 	const filteredData = data.docs.map((doc: QueryDocumentSnapshot) => ({
 		...doc.data(),
@@ -118,7 +127,7 @@ export default function PitchTracker() {
 
 	useEffect(() => {
 		const getPitchData = async () => {
-			const data = await getPitches();
+			const data = await getPitches(selectedPitcherName);
 			setPitchData(data);
 			setIsLoading(false);
 		};
@@ -132,7 +141,7 @@ export default function PitchTracker() {
 		if (pitcherData.length === 0) {
 			getPitcherData();
 		}
-	}, [isLoading, pitcherData]);
+	}, [isLoading, pitcherData, selectedPitcherName]);
 
 	return (
 		<div className="flex flex-row">
