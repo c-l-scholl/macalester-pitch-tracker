@@ -13,6 +13,7 @@ import {
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export default function UserItem() {
 	const { toast } = useToast();
@@ -82,39 +83,28 @@ export default function UserItem() {
 
 	return (
 		<DropdownMenu>
-      <DropdownMenuTrigger>
-			<div
-				className="flex items-center justify-between gap-2 border rounded-[8px] p-2 hover:bg-primary/10 transition duration-200 cursor-pointer"
-			>
-				{!isSignedIn && (
-          
-            <div className="avatar rounded-full min-h-10 min-w-10 bg-emerald-500 text-white font-[700] flex items-center justify-center">
-              <p>?</p>
-            </div>
-          )}
-          {isSignedIn && (
-            <Image
-              src={pfp}
-              alt="?"
-              width={40}
-              height={40}
-              className="rounded-full"
-            />
-          )}
-          <div className="grow">
-            <p className="text-[16px] font-bold text-left">
-              {isSignedIn ? username : "Please log in"}
-            </p>
-            <p className="text-[12px] text-neutral-500 text-left">
-              {isSignedIn ? email : ""}
-            </p>
-          </div>
-        </div>
-      </DropdownMenuTrigger>
+			<DropdownMenuTrigger>
+				<div className="flex items-center justify-between gap-2 border rounded-[8px] p-2 hover:bg-primary/10 transition duration-200 cursor-pointer">
+					<Avatar>
+						<AvatarImage src={pfp} />
+						<AvatarFallback>?</AvatarFallback>
+					</Avatar>
+					<div className="grow">
+						<p className="text-[16px] font-bold text-left">
+							{isSignedIn ? username : "Please log in"}
+						</p>
+						<p className="text-[12px] text-neutral-500 text-left">
+							{isSignedIn ? email : ""}
+						</p>
+					</div>
+				</div>
+			</DropdownMenuTrigger>
 			<DropdownMenuContent>
 				<DropdownMenuLabel>My Account</DropdownMenuLabel>
 				<DropdownMenuSeparator />
-				<DropdownMenuItem onClick={handleUserItemClick}>{isSignedIn ? "Logout" : "Sign In"}</DropdownMenuItem>
+				<DropdownMenuItem onClick={handleUserItemClick}>
+					{isSignedIn ? "Logout" : "Sign In"}
+				</DropdownMenuItem>
 			</DropdownMenuContent>
 		</DropdownMenu>
 	);

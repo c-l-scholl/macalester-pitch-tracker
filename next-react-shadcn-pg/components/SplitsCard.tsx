@@ -22,7 +22,6 @@ import {
 
 const getSpecificPitchData = async (pitcherName: string, type: string, batter: string, collRef: CollectionReference) => {
 	
-
 	const q = query(
 		collRef,
 		where("pitchType", "==", type),
