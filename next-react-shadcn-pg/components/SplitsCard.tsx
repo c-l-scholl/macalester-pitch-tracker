@@ -78,8 +78,8 @@ const SplitsCard = ({ pitchType }: SplitsCardProps) => {
 		}
 	});
 
-	// Calculate SLG
-	
+	// Calculate SLG (look up how to calculate properly)
+
 
 
 	return (
@@ -88,6 +88,7 @@ const SplitsCard = ({ pitchType }: SplitsCardProps) => {
 				<Card>
 					<CardHeader>
 						<CardTitle>{pitchType}</CardTitle>
+						<CardDescription>Summary Stats</CardDescription>
 					</CardHeader>
 					<CardContent>
 						<p>K% Splits: {`${Math.round((10000 * rfStrikes) / rPitches) / 100}% / 
