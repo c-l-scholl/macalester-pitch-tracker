@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { PitchForm } from "@/components/PitchForm";
 import { FullPitchData, getFullPitchDataColumns } from "./SummaryColumns";
 import { FullDataTable } from "@/components/FullDataTable";
 import { db } from "@/firebase/clientApp";
@@ -14,13 +13,17 @@ import {
 	deleteDoc,
 	doc,
 	Timestamp,
-	where,
 } from "firebase/firestore";
 import { useToast } from "@/components/ui/use-toast";
 import PitchCount from "../pitch-tracker/PitchCount";
-import PitcherSelect from "./PitcherSelect";
 import SplitsData from "./SplitsData";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
 
 export type Pitcher = {
 	id: string;
@@ -134,11 +137,9 @@ export default function PitchTracker() {
 	return (
 		<div className="flex flex-row">
 			<div className="sticky flex flex-col gap-2 w-[300px] min-w-[300px] border-r min-h-screen p-4">
-				{/* <PitcherSelect
-					pitcherList={pitcherData}
-					setSelectedPitcher={setSelectedPitcher}
-				/> */}
-				<Select onValueChange={(value: string) => setSelectedPitcherName(value)}>
+				<Select
+					onValueChange={(value: string) => setSelectedPitcherName(value)}
+				>
 					<SelectTrigger className="w-[180px]">
 						<SelectValue placeholder="Select a pitcher..." />
 					</SelectTrigger>
@@ -148,14 +149,11 @@ export default function PitchTracker() {
 								<SelectItem
 									key={pitcher.id}
 									value={pitcher.fullName}
-									
 								>{`${pitcher.playerNumber} ${pitcher.fullName}`}</SelectItem>
 							))}
 					</SelectContent>
 				</Select>
-				<SplitsData
-					selectedPitcherName={selectedPitcherName}
-				/>
+				<SplitsData selectedPitcherName={selectedPitcherName} />
 			</div>
 
 			<div className="flex-grow p-4 mx-4">
@@ -163,7 +161,6 @@ export default function PitchTracker() {
 					<h1 className="text-3xl font-bold ">Pitcher Data</h1>
 					<PitchCount pitchCount={pitchData.length} />
 				</div>
-
 				{isLoading && <span>Loading</span>}
 				{!isLoading && <FullDataTable columns={columns} data={pitchData} />}
 			</div>
