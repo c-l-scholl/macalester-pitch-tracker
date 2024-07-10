@@ -131,7 +131,7 @@ export default function PitchTracker() {
 		<div className="flex flex-row">
 			<div className="sticky flex flex-col gap-2 w-[300px] min-w-[300px] border-r min-h-screen p-4">
 				<PitcherSelect pitcherList={pitcherData}/>
-				<SplitsData/>
+				<SplitsData selectedPitcher="Camden Scholl"/>
 				{/* select pitcher thing here */}
 				{/* side bar here */}
 			</div>
