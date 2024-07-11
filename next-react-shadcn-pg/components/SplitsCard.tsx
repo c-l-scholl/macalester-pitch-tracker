@@ -25,7 +25,6 @@ const getSpecificPitchData = async (pitcherName: string, type: string, collRef: 
 	const q = query(
 		collRef,
 		where("pitchType", "==", type),
-		// where("batterHand", "==", batter),
 		where("fullName", "==", pitcherName),
 	);
 

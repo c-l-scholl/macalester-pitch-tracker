@@ -1,9 +1,8 @@
 "use client";
 
 import { auth, googleProvider } from "@/firebase/clientApp";
-import { useState } from "react";
+import { useLayoutEffect, useState } from "react";
 import { onAuthStateChanged, signInWithPopup, signOut } from "firebase/auth";
-import Image from "next/image";
 import { useToast } from "@/components/ui/use-toast";
 import {
 	DropdownMenu,
@@ -78,6 +77,9 @@ export default function UserItem() {
 			}
 		} else {
 			setIsSignedIn(false);
+			setUsername("");
+			setEmail("");
+			setPfp("");
 		}
 	});
 

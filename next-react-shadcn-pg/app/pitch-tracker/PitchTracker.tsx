@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useLayoutEffect } from "react";
 import { PitchForm } from "@/components/PitchForm";
 import { Pitch, getPitchColumns } from "./columns";
 import { DataTable } from "@/components/TrackerDataTable";
@@ -15,6 +15,8 @@ import {
 	doc,
 	Timestamp,
 	where,
+	onSnapshot,
+	QuerySnapshot,
 } from "firebase/firestore";
 import PitchCount from "./PitchCount";
 import { useToast } from "@/components/ui/use-toast";
@@ -23,7 +25,7 @@ export type Pitcher = {
 	id: string;
 	fullName: string;
 	playerNumber: number;
-}
+};
 
 const getTodayTimestamp = (): Timestamp => {
 	const todayStart = new Date();
@@ -36,10 +38,11 @@ async function getPitches(): Promise<Pitch[]> {
 	// needs to be expanded to take specific pitcher
 	// maybe a component above the form and this page that gets the pitcher
 	const pitchesCollRef = collection(db, "pitches");
+	const today: Timestamp = getTodayTimestamp();
 
 	const q = query(
 		pitchesCollRef,
-		where("pitchDate", ">=", getTodayTimestamp()),
+		where("pitchDate", ">=", today),
 		orderBy("pitchDate", "desc")
 	);
 	const data = await getDocs(q);
@@ -48,6 +51,13 @@ async function getPitches(): Promise<Pitch[]> {
 		id: doc.id,
 	})) as Pitch[];
 	return filteredData;
+	// const snapShot = onSnapshot(q, (querySnapshot) => {
+	// 	const data = [];
+	// 	querySnapshot.forEach((doc) => {
+	// 		data.push({ ...doc.data(), id: doc.id });
+	// 	});
+	// });
+	// return [];
 }
 
 const getPitcherList = async (): Promise<Pitcher[]> => {
@@ -105,6 +115,37 @@ export default function PitchTracker() {
 		}
 	};
 
+	//const getPitchesSnapShot = () => {
+	// const pitchesCollRef = collection(db, "pitches");
+	// const today: Timestamp = getTodayTimestamp();
+
+	// const q = query(
+	// 	pitchesCollRef,
+	// 	where("pitchDate", ">=", today),
+	// 	orderBy("pitchDate", "desc")
+	// );
+	// // TODO: FIX THIS
+	// const snapShot = onSnapshot(q, (querySnapshot) => {
+	// 	const data: Pitch[] = [];
+	// 	querySnapshot.forEach((doc) => {
+	// 		const pitchData = doc.data() as Omit<Pitch, "id">;
+	// 		data.push({ ...pitchData, id: doc.id });
+	// 	});
+	// 	setPitchData(data);
+	// 	setIsLoading(false);
+	// 	console.log(data[0].fullName);
+	// });
+	// snapShot();
+	// };
+
+	const getPitcherData = async () => {
+		const pitcherList = await getPitcherList();
+		setPitcherData(pitcherList);
+	};
+	if (pitcherData.length === 0) {
+		getPitcherData();
+	}
+
 	const columns = getPitchColumns({ onEdit, onDelete });
 
 	useEffect(() => {
@@ -113,17 +154,11 @@ export default function PitchTracker() {
 			setPitchData(data);
 			setIsLoading(false);
 		};
-
-		const getPitcherData = async () => {
-			const pitcherList = await getPitcherList();
-			setPitcherData(pitcherList);
-		}
-
 		getPitchData();
-		if (pitcherData.length === 0) {
-			getPitcherData();
-		}
-	}, [isLoading, pitcherData]);
+		console.log("re-render");
+		
+	}, [isLoading]);
+
 
 	return (
 		<div className="flex min-w-screen">

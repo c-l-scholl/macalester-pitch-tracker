@@ -46,8 +46,8 @@ async function getPitches(pitcherName: string): Promise<FullPitchData[]> {
 
 	const q = query(
 		pitchesCollRef,
-		where("fullName", "==", "pitcherName"),
-		orderBy("pitchDate", "desc")
+		where("fullName", "==", pitcherName),
+		orderBy("pitchDate", "desc"),
 	);
 
 	const data = await getDocs(q);
@@ -116,6 +116,14 @@ export default function PitchTracker() {
 		}
 	};
 
+	const getPitcherData = async () => {
+		const pitcherList = await getPitcherList();
+		setPitcherData(pitcherList);
+	};
+	if (pitcherData.length === 0) {
+		getPitcherData();
+	}
+
 	const columns = getFullPitchDataColumns({ onEdit, onDelete });
 
 	useEffect(() => {
@@ -124,16 +132,9 @@ export default function PitchTracker() {
 			setPitchData(data);
 			setIsLoading(false);
 		};
-
-		const getPitcherData = async () => {
-			const pitcherList = await getPitcherList();
-			setPitcherData(pitcherList);
-		};
+		console.log("pitcher summary re-render");
 
 		getPitchData();
-		if (pitcherData.length === 0) {
-			getPitcherData();
-		}
 	}, [isLoading, pitcherData, selectedPitcherName]);
 
 	return (
