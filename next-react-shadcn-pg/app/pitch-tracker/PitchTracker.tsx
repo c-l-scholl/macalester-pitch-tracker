@@ -51,15 +51,9 @@ async function getPitches(): Promise<Pitch[]> {
 		id: doc.id,
 	})) as Pitch[];
 	return filteredData;
-	// const snapShot = onSnapshot(q, (querySnapshot) => {
-	// 	const data = [];
-	// 	querySnapshot.forEach((doc) => {
-	// 		data.push({ ...doc.data(), id: doc.id });
-	// 	});
-	// });
-	// return [];
 }
 
+// this is identical method, maybe pass this out to somewhere else
 const getPitcherList = async (): Promise<Pitcher[]> => {
 	const pitcherCollRef = collection(db, "pitcher");
 	const q = query(pitcherCollRef, orderBy("playerNumber", "asc"));
@@ -114,29 +108,6 @@ export default function PitchTracker() {
 			setSelectedPitch(null);
 		}
 	};
-
-	//const getPitchesSnapShot = () => {
-	// const pitchesCollRef = collection(db, "pitches");
-	// const today: Timestamp = getTodayTimestamp();
-
-	// const q = query(
-	// 	pitchesCollRef,
-	// 	where("pitchDate", ">=", today),
-	// 	orderBy("pitchDate", "desc")
-	// );
-	// // TODO: FIX THIS
-	// const snapShot = onSnapshot(q, (querySnapshot) => {
-	// 	const data: Pitch[] = [];
-	// 	querySnapshot.forEach((doc) => {
-	// 		const pitchData = doc.data() as Omit<Pitch, "id">;
-	// 		data.push({ ...pitchData, id: doc.id });
-	// 	});
-	// 	setPitchData(data);
-	// 	setIsLoading(false);
-	// 	console.log(data[0].fullName);
-	// });
-	// snapShot();
-	// };
 
 	const getPitcherData = async () => {
 		const pitcherList = await getPitcherList();

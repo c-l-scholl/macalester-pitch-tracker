@@ -60,7 +60,10 @@ async function getPitches(pitcherName: string): Promise<FullPitchData[]> {
 
 const getPitcherList = async (): Promise<Pitcher[]> => {
 	const pitcherCollRef = collection(db, "pitcher");
-	const q = query(pitcherCollRef, orderBy("playerNumber", "asc"));
+	const q = query(
+		pitcherCollRef, 
+		orderBy("playerNumber", "asc")
+	);
 	const pitcherData = await getDocs(q);
 	const filteredPitcherData = pitcherData.docs.map(
 		(doc: QueryDocumentSnapshot) => ({
@@ -135,7 +138,7 @@ export default function PitchTracker() {
 		console.log("pitcher summary re-render");
 
 		getPitchData();
-	}, [isLoading, pitcherData, selectedPitcherName]);
+	}, [isLoading, selectedPitcherName]);
 
 	return (
 		<div className="flex flex-row">

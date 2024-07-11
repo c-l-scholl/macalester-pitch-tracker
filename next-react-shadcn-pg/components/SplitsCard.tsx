@@ -24,8 +24,8 @@ const getSpecificPitchData = async (pitcherName: string, type: string, collRef: 
 	
 	const q = query(
 		collRef,
-		where("pitchType", "==", type),
 		where("fullName", "==", pitcherName),
+		where("pitchType", "==", type),
 	);
 
 	const data = await getDocs(q);
@@ -42,8 +42,6 @@ const calculateKSplits = (stats: FullPitchData[]): string => {
 
 	let rPitches: number = 0;
 	let lPitches: number = 0;
-	// const rPitches: number = rStats.length > 0 ? rStats.length : 1;
-	// const lPitches: number = lStats.length > 0 ? lStats.length : 1;
 
 	stats?.forEach((element) => {
 		if (element.batterHand === "Right") {
@@ -155,27 +153,10 @@ interface SplitsCardProps {
 }
 
 const SplitsCard = ({ pitchType, selectedPitcherName }: SplitsCardProps) => {
-	// const [rStats, setRstats] = useState<FullPitchData[]>([]);
-	// const [lStats, setLstats] = useState<FullPitchData[]>([]);
 	const [stats, setStats] = useState<FullPitchData[]>([]);
 	const [show, setShow] = useState<boolean>(false);
 
 	const pitchesCollRef = collection(db, "pitches");
-
-	// useEffect(() => {
-	// 	const getData = async () => {
-	// 		const rd = await getSpecificPitchData(selectedPitcherName, pitchType, "Right", pitchesCollRef);
-	// 		const ld = await getSpecificPitchData(selectedPitcherName, pitchType, "Left", pitchesCollRef);
-	// 		if (rd.length === 0 && ld.length === 0) {
-	// 			setShow(false);
-	// 		} else {
-	// 			setShow(true);
-	// 		}
-	// 		setRstats(rd);
-	// 		setLstats(ld);
-	// 	};
-	// 	getData();
-	// }, [pitchType, selectedPitcherName, pitchesCollRef]);
 
 	useEffect(() => {
 		const getData = async () => {
@@ -193,9 +174,7 @@ const SplitsCard = ({ pitchType, selectedPitcherName }: SplitsCardProps) => {
 	// Calculate Strike percentage
 	const kSplitsStr: string = calculateKSplits(stats);
 	
-
 	// Calculate SLG 
-
 	const slgStr = calculateSLG(stats);
 
 	return (
