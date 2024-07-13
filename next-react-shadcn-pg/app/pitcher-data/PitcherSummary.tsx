@@ -25,6 +25,7 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
+import DatePicker from "@/components/DatePicker";
 
 export type Pitcher = {
 	id: string;
@@ -32,21 +33,23 @@ export type Pitcher = {
 	playerNumber: number;
 };
 
-// const getTodayTimestamp = (): Timestamp => {
-// 	const todayStart = new Date();
-// 	todayStart.setHours(0, 0, 0, 0);
-// 	const todayTimestamp: Timestamp = Timestamp.fromDate(todayStart);
-// 	return todayTimestamp;
-// };
+const getStartTimestamp = (date: Date): Timestamp => {
+	const dayStart = date;
+	dayStart.setHours(0, 0, 0, 0);
+	const dayTimestamp: Timestamp = Timestamp.fromDate(dayStart);
+	return dayTimestamp;
+};
 
-async function getPitches(pitcherName: string): Promise<FullPitchData[]> {
+async function getPitches(pitcherName: string, date: Date): Promise<FullPitchData[]> {
 	// needs to be expanded to take specific pitcher
 	// maybe a component above the form and this page that gets the pitcher
 	const pitchesCollRef = collection(db, "pitches");
+	const dateAsTimestamp: Timestamp = getStartTimestamp(date);
 
 	const q = query(
 		pitchesCollRef,
 		where("fullName", "==", pitcherName),
+		where("pitchDate", ">=", dateAsTimestamp),
 		orderBy("pitchDate", "desc"),
 	);
 
@@ -80,11 +83,12 @@ export default function PitchTracker() {
 	const [isLoading, setIsLoading] = useState<boolean>(false);
 	const [pitchData, setPitchData] = useState<FullPitchData[]>([]);
 	const [pitcherData, setPitcherData] = useState<Pitcher[]>([]);
-	const [isChanging, setIsChanging] = useState<boolean>(false);
-	const [selectedPitch, setSelectedPitch] = useState<FullPitchData | null>(
-		null
-	);
 	const [selectedPitcherName, setSelectedPitcherName] = useState<string>("");
+	const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+
+
+	const [isChanging, setIsChanging] = useState<boolean>(false);
+	const [selectedPitch, setSelectedPitch] = useState<FullPitchData | null>(null);
 
 	const onDelete = async (pitch: FullPitchData) => {
 		setIsLoading(true);
@@ -131,14 +135,14 @@ export default function PitchTracker() {
 
 	useEffect(() => {
 		const getPitchData = async () => {
-			const data = await getPitches(selectedPitcherName);
+			const data = await getPitches(selectedPitcherName, selectedDate);
 			setPitchData(data);
 			setIsLoading(false);
 		};
 		console.log("pitcher summary re-render");
 
 		getPitchData();
-	}, [isLoading, selectedPitcherName]);
+	}, [isLoading, selectedPitcherName, selectedDate]);
 
 	return (
 		<div className="flex flex-row">
@@ -159,6 +163,7 @@ export default function PitchTracker() {
 							))}
 					</SelectContent>
 				</Select>
+				<DatePicker date={selectedDate} setDate={setSelectedDate}/>
 				<SplitsData selectedPitcherName={selectedPitcherName} />
 			</div>
 
