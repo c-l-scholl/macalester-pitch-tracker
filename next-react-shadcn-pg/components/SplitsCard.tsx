@@ -7,6 +7,7 @@ import {
 	getDocs,
 	query,
 	QueryDocumentSnapshot,
+	Timestamp,
 	where,
 } from "firebase/firestore";
 import { FullPitchData } from "@/app/pitcher-data/SummaryColumns";
@@ -20,11 +21,12 @@ import {
 	CardTitle,
 } from "@/components/ui/card";
 
-const getSpecificPitchData = async (pitcherName: string, type: string, collRef: CollectionReference) => {
+const getSpecificPitchData = async (pitcherName: string, type: string, collRef: CollectionReference, ts: Timestamp) => {
 	
 	const q = query(
 		collRef,
 		where("fullName", "==", pitcherName),
+		where("pitchDate", ">=", ts),
 		where("pitchType", "==", type),
 	);
 
@@ -49,10 +51,10 @@ const calculateKSplits = (stats: FullPitchData[]): string => {
 			if (element.result !== "Ball") {
 				rfStrikes++;
 			}
-		} else {
+		} else if (element.batterHand === "Left") {
 			lPitches++;
 			if (element.result !== "Ball") {
-				lfStrikes;
+				lfStrikes++;
 			}
 		}
 	});
@@ -60,8 +62,8 @@ const calculateKSplits = (stats: FullPitchData[]): string => {
 	lPitches = lPitches === 0 ? 1 : lPitches;
 	rPitches = rPitches === 0 ? 1 : rPitches;
 
-	return `${Math.round((10000 * lfStrikes) / lPitches) / 100}% / 
-					${Math.round((10000 * rfStrikes) / rPitches) / 100}%`;
+	return `${Math.round((100 * lfStrikes) / lPitches)}% / 
+					${Math.round((100 * rfStrikes) / rPitches)}%`;
 }
 
 const calculateSLG = (stats: FullPitchData[]): string => {
@@ -150,9 +152,10 @@ const formatSLG = (slg: number): string => {
 interface SplitsCardProps {
 	pitchType: string;
 	selectedPitcherName: string;
+	selectedTimestamp: Timestamp;
 }
 
-const SplitsCard = ({ pitchType, selectedPitcherName }: SplitsCardProps) => {
+const SplitsCard = ({ pitchType, selectedPitcherName, selectedTimestamp }: SplitsCardProps) => {
 	const [stats, setStats] = useState<FullPitchData[]>([]);
 	const [show, setShow] = useState<boolean>(false);
 
@@ -160,7 +163,7 @@ const SplitsCard = ({ pitchType, selectedPitcherName }: SplitsCardProps) => {
 
 	useEffect(() => {
 		const getData = async () => {
-			const d = await getSpecificPitchData(selectedPitcherName, pitchType, pitchesCollRef);
+			const d = await getSpecificPitchData(selectedPitcherName, pitchType, pitchesCollRef, selectedTimestamp);
 			if (d.length === 0) {
 				setShow(false);
 			} else {
@@ -169,7 +172,7 @@ const SplitsCard = ({ pitchType, selectedPitcherName }: SplitsCardProps) => {
 			setStats(d);
 		};
 		getData();
-	}, [pitchType, selectedPitcherName, pitchesCollRef]);
+	}, [pitchType, selectedPitcherName, pitchesCollRef, selectedTimestamp]);
 
 	// Calculate Strike percentage
 	const kSplitsStr: string = calculateKSplits(stats);

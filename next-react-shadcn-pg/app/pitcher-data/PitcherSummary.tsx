@@ -14,6 +14,12 @@ import {
 	doc,
 	Timestamp,
 	where,
+	onSnapshot,
+	DocumentData,
+	FirestoreError,
+	QuerySnapshot,
+	SnapshotListenOptions,
+	DocumentSnapshot,
 } from "firebase/firestore";
 import { useToast } from "@/components/ui/use-toast";
 import PitchCount from "../pitch-tracker/PitchCount";
@@ -40,9 +46,26 @@ const getStartTimestamp = (date: Date): Timestamp => {
 	return dayTimestamp;
 };
 
-async function getPitches(pitcherName: string, date: Date): Promise<FullPitchData[]> {
-	// needs to be expanded to take specific pitcher
-	// maybe a component above the form and this page that gets the pitcher
+export const streamPitchList = (
+	pitcherName: string,
+	date: Date,
+	callback: (snapshot: QuerySnapshot) => void
+) => {
+	const pitchesCollRef = collection(db, "pitches");
+	const dateAsTimestamp: Timestamp = getStartTimestamp(date);
+	const q = query(
+		pitchesCollRef,
+		where("fullName", "==", pitcherName),
+		where("pitchDate", ">=", dateAsTimestamp),
+		orderBy("pitchDate", "desc")
+	);
+	return onSnapshot(q, callback);
+};
+
+async function getPitches(
+	pitcherName: string,
+	date: Date
+): Promise<FullPitchData[]> {
 	const pitchesCollRef = collection(db, "pitches");
 	const dateAsTimestamp: Timestamp = getStartTimestamp(date);
 
@@ -50,7 +73,7 @@ async function getPitches(pitcherName: string, date: Date): Promise<FullPitchDat
 		pitchesCollRef,
 		where("fullName", "==", pitcherName),
 		where("pitchDate", ">=", dateAsTimestamp),
-		orderBy("pitchDate", "desc"),
+		orderBy("pitchDate", "desc")
 	);
 
 	const data = await getDocs(q);
@@ -63,10 +86,7 @@ async function getPitches(pitcherName: string, date: Date): Promise<FullPitchDat
 
 const getPitcherList = async (): Promise<Pitcher[]> => {
 	const pitcherCollRef = collection(db, "pitcher");
-	const q = query(
-		pitcherCollRef, 
-		orderBy("playerNumber", "asc")
-	);
+	const q = query(pitcherCollRef, orderBy("playerNumber", "asc"));
 	const pitcherData = await getDocs(q);
 	const filteredPitcherData = pitcherData.docs.map(
 		(doc: QueryDocumentSnapshot) => ({
@@ -86,9 +106,10 @@ export default function PitchTracker() {
 	const [selectedPitcherName, setSelectedPitcherName] = useState<string>("");
 	const [selectedDate, setSelectedDate] = useState<Date>(new Date());
 
-
 	const [isChanging, setIsChanging] = useState<boolean>(false);
-	const [selectedPitch, setSelectedPitch] = useState<FullPitchData | null>(null);
+	const [selectedPitch, setSelectedPitch] = useState<FullPitchData | null>(
+		null
+	);
 
 	const onDelete = async (pitch: FullPitchData) => {
 		setIsLoading(true);
@@ -133,16 +154,30 @@ export default function PitchTracker() {
 
 	const columns = getFullPitchDataColumns({ onEdit, onDelete });
 
-	useEffect(() => {
-		const getPitchData = async () => {
-			const data = await getPitches(selectedPitcherName, selectedDate);
-			setPitchData(data);
-			setIsLoading(false);
-		};
-		console.log("pitcher summary re-render");
+	// useEffect(() => {
+	// 	const getPitchData = async () => {
+	// 		const data = await getPitches(selectedPitcherName, selectedDate);
+	// 		setPitchData(data);
+	// 		setIsLoading(false);
+	// 	};
+	// 	console.log("pitcher summary re-render");
 
-		getPitchData();
-	}, [isLoading, selectedPitcherName, selectedDate]);
+	// 	getPitchData();
+	// }, [isLoading, selectedPitcherName, selectedDate]);
+
+	useEffect(() => {
+		const unsubscribe = streamPitchList(
+			selectedPitcherName,
+			selectedDate,
+			(querySnapshot) => {
+				const updatedPitches = querySnapshot.docs.map(
+					(doc: QueryDocumentSnapshot) => ({ ...doc.data(), id: doc.id })
+				) as FullPitchData[];
+				setPitchData(updatedPitches);
+			},
+		);
+		return unsubscribe;
+	}, [selectedPitcherName, selectedDate, setPitchData]);
 
 	return (
 		<div className="flex flex-row">
@@ -163,8 +198,8 @@ export default function PitchTracker() {
 							))}
 					</SelectContent>
 				</Select>
-				<DatePicker date={selectedDate} setDate={setSelectedDate}/>
-				<SplitsData selectedPitcherName={selectedPitcherName} />
+				<DatePicker date={selectedDate} setDate={setSelectedDate} />
+				<SplitsData selectedPitcherName={selectedPitcherName} selectedTimestamp={getStartTimestamp(selectedDate)}/>
 			</div>
 
 			<div className="flex-grow p-4 mx-4">
