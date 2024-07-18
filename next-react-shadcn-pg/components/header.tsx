@@ -38,6 +38,14 @@ export default function Header() {
 								</NavigationMenuLink>
 							</Link>
 						</NavigationMenuItem>
+						<NavigationMenuItem>
+							{/* Add something here to block nav if not signed in */}
+							<Link href="/player-management" legacyBehavior passHref>
+								<NavigationMenuLink className={navigationMenuTriggerStyle()}>
+									Player Management
+								</NavigationMenuLink>
+							</Link>
+						</NavigationMenuItem>
 					</NavigationMenuList>
 				</NavigationMenu>
 			</div>

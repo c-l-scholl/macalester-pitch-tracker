@@ -154,17 +154,6 @@ export default function PitchTracker() {
 
 	const columns = getFullPitchDataColumns({ onEdit, onDelete });
 
-	// useEffect(() => {
-	// 	const getPitchData = async () => {
-	// 		const data = await getPitches(selectedPitcherName, selectedDate);
-	// 		setPitchData(data);
-	// 		setIsLoading(false);
-	// 	};
-	// 	console.log("pitcher summary re-render");
-
-	// 	getPitchData();
-	// }, [isLoading, selectedPitcherName, selectedDate]);
-
 	useEffect(() => {
 		const unsubscribe = streamPitchList(
 			selectedPitcherName,
