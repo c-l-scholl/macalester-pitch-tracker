@@ -2,31 +2,41 @@
 
 import Link from "next/link";
 
-import { HomePageAuth } from "./HomePageAuth";
 import { Button } from "./ui/button";
-import { auth } from "@/firebase/clientApp";
-import { onAuthStateChanged } from "firebase/auth";
-import { useState } from "react";
+import { auth, googleProvider } from "@/firebase/clientApp";
+import { signInWithPopup } from "firebase/auth";
+import { useAuth } from "@/firebase/auth";
+import { useToast } from "./ui/use-toast";
 
 const UserLogin = () => {
-	const [isSignedIn, setIsSignedIn] = useState<boolean>(false);
+	const { authUser } = useAuth();
 
-	onAuthStateChanged(auth, (user) => {
-		if (user) {
-			setIsSignedIn(true);
-		} else {
-			setIsSignedIn(false);
+	const { toast } = useToast();
+
+	const signInWithGoogle = async () => {
+		try {
+			await signInWithPopup(auth, googleProvider);
+			toast({
+				description: "Your sign-in was successful.",
+			});
+		} catch (err) {
+			toast({
+				title: "Uh oh! Something went wrong",
+				description:
+					"There was a problem with your sign-in attempt. Please try again.",
+				variant: "destructive",
+			});
+			console.error(err);
 		}
-	});
-
+	};
 	return (
 		<>
 			<div className="flex flex-col min-h-screen min-w-screen justify-center items-center gap-2">
-        <div>
-          <HomePageAuth isSignedIn={isSignedIn} />
-        </div>
+				{!authUser && <div>
+					<Button onClick={signInWithGoogle}>Sign In With Google</Button>
+				</div>}
 				
-				{isSignedIn && (
+				{authUser && (
 					<div className="">
 						<Button variant="link" size="lg">
 							<Link href="/pitch-data">

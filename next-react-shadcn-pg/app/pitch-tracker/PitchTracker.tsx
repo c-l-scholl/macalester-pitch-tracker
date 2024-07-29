@@ -113,6 +113,7 @@ export default function PitchTracker() {
 		const pitcherList = await getPitcherList();
 		setPitcherData(pitcherList);
 	};
+	
 	if (pitcherData.length === 0) {
 		getPitcherData();
 	}
