@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useLayoutEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { PitchForm } from "@/components/PitchForm";
 import { Pitch, getPitchColumns } from "./columns";
 import { DataTable } from "@/components/TrackerDataTable";
@@ -32,6 +32,17 @@ const getTodayTimestamp = (): Timestamp => {
 	todayStart.setHours(0, 0, 0, 0);
 	const todayTimestamp: Timestamp = Timestamp.fromDate(todayStart);
 	return todayTimestamp;
+};
+
+export const streamPitchList = (callback: (snapshot: QuerySnapshot) => void) => {
+	const pitchesCollRef = collection(db, "pitches");
+	const today: Timestamp = getTodayTimestamp();
+	const q = query(
+		pitchesCollRef,
+		where("pitchDate", ">=", today),
+		orderBy("pitchDate", "desc")
+	);
+	return onSnapshot(q, callback);
 };
 
 async function getPitches(): Promise<Pitch[]> {
@@ -109,27 +120,40 @@ export default function PitchTracker() {
 		}
 	};
 
-	const getPitcherData = async () => {
-		const pitcherList = await getPitcherList();
-		setPitcherData(pitcherList);
-	};
+	// const getPitcherData = async () => {
+	// 	const pitcherList = await getPitcherList();
+	// 	setPitcherData(pitcherList);
+	// };
 	
-	if (pitcherData.length === 0) {
-		getPitcherData();
-	}
+	// if (pitcherData.length === 0) {
+	// 	getPitcherData();
+	// }
 
 	const columns = getPitchColumns({ onEdit, onDelete });
 
 	useEffect(() => {
-		const getPitchData = async () => {
-			const data = await getPitches();
-			setPitchData(data);
-			setIsLoading(false);
-		};
-		getPitchData();
-		console.log("re-render");
+		// const getPitchData = async () => {
+		// 	const data = await getPitches();
+		// 	setPitchData(data);
+		// 	setIsLoading(false);
+		// };
+		// getPitchData();
+		// console.log("re-render");
+		const unsubscribe = streamPitchList((querySnapshot) => {
+			const filteredPitchList = querySnapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id })) as Pitch[];
+			setPitchData(filteredPitchList);
+		});
+		return () => unsubscribe();
 		
 	}, [isLoading]);
+
+	useEffect(() => {
+		const getPitcherData = async () => {
+			const pitcherList = await getPitcherList();
+			setPitcherData(pitcherList);
+		};
+		getPitcherData();
+	}, []);
 
 
 	return (

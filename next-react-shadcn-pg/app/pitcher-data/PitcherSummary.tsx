@@ -165,7 +165,7 @@ export default function PitchTracker() {
 				setPitchData(updatedPitches);
 			},
 		);
-		return unsubscribe;
+		return () => unsubscribe();
 	}, [selectedPitcherName, selectedDate, setPitchData]);
 
 	return (

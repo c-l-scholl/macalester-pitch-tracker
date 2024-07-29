@@ -83,7 +83,7 @@ export const PitchForm = ({
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
 		defaultValues: {
-			pitcher: "Camden Scholl",
+			pitcher: "",
 			batterHand: "Right",
 			velocity: 50,
 			pitchType: "FB",
@@ -110,9 +110,6 @@ export const PitchForm = ({
 
 	// 2. Define a submit handler.
 	async function onSubmit(values: z.infer<typeof formSchema>) {
-		// Do something with the form values.
-		// ✅ This will be type-safe and validated.
-
 		const pitchesCollRef = collection(db, "pitches");
 		setIsLoading(true);
 		if (!isChanging) {
