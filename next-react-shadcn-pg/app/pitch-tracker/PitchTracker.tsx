@@ -20,6 +20,7 @@ import {
 } from "firebase/firestore";
 import PitchCount from "./PitchCount";
 import { useToast } from "@/components/ui/use-toast";
+import PitcherSelecter from "@/components/PitcherSelecter";
 
 export type Pitcher = {
 	id: string;
@@ -83,9 +84,10 @@ export default function PitchTracker() {
 
 	const [isLoading, setIsLoading] = useState<boolean>(false);
 	const [pitchData, setPitchData] = useState<Pitch[]>([]);
-	const [pitcherData, setPitcherData] = useState<Pitcher[]>([]);
+	//const [pitcherData, setPitcherData] = useState<Pitcher[]>([]);
 	const [isChanging, setIsChanging] = useState<boolean>(false);
 	const [selectedPitch, setSelectedPitch] = useState<Pitch | null>(null);
+	const [selectedPitcherName, setSelectedPitcherName] = useState<string>("");
 
 	const onDelete = async (pitch: Pitch) => {
 		setIsLoading(true);
@@ -147,24 +149,26 @@ export default function PitchTracker() {
 		
 	}, [isLoading]);
 
-	useEffect(() => {
-		const getPitcherData = async () => {
-			const pitcherList = await getPitcherList();
-			setPitcherData(pitcherList);
-		};
-		getPitcherData();
-	}, []);
+	// useEffect(() => {
+	// 	const getPitcherData = async () => {
+	// 		const pitcherList = await getPitcherList();
+	// 		setPitcherData(pitcherList);
+	// 	};
+	// 	getPitcherData();
+	// }, []);
 
 
 	return (
 		<div className="flex min-w-screen">
 			<div className="flex-none">
+				<PitcherSelecter setSelectedPitcherName={setSelectedPitcherName}/>
 				<PitchForm
 					setIsLoading={setIsLoading}
 					isChanging={isChanging}
 					selectedPitch={selectedPitch}
 					onOpenChange={onOpenChange}
-					pitcherList={pitcherData}
+					//pitcherList={pitcherData}
+					selectedPitcherName={selectedPitcherName}
 				/>
 			</div>
 

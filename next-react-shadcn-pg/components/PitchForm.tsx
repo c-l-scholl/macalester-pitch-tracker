@@ -39,9 +39,9 @@ import { Pitch } from "@/app/pitch-tracker/columns";
 import { useToast } from "./ui/use-toast";
 
 const formSchema = z.object({
-	pitcher: z.string().min(2, {
-		message: "Username must be at least 2 characters.",
-	}),
+	// pitcher: z.string().min(2, {
+	// 	message: "Username must be at least 2 characters.",
+	// }),
 	batterHand: z.enum(["Left", "Right"], {
 		required_error: "You need to select a batter handedness.",
 	}),
@@ -61,7 +61,8 @@ interface PitchFormProps {
 	onOpenChange: (value: boolean) => void;
 	selectedPitch: Pitch | null;
 	isChanging: boolean;
-	pitcherList: Pitcher[] | null;
+	// pitcherList: Pitcher[] | null;
+	selectedPitcherName: string;
 }
 
 interface Pitcher {
@@ -75,7 +76,8 @@ export const PitchForm = ({
 	selectedPitch,
 	isChanging,
 	onOpenChange,
-	pitcherList,
+	//pitcherList,
+	selectedPitcherName,
 }: PitchFormProps) => {
 	const { toast } = useToast();
 
@@ -83,7 +85,7 @@ export const PitchForm = ({
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
 		defaultValues: {
-			pitcher: "",
+			//pitcher: "",
 			batterHand: "Right",
 			velocity: 50,
 			pitchType: "FB",
@@ -94,7 +96,7 @@ export const PitchForm = ({
 	useEffect(() => {
 		if (selectedPitch) {
 			form.reset({
-				pitcher: selectedPitch.fullName,
+				//pitcher: selectedPitch.fullName,
 				batterHand: selectedPitch.batterHand,
 				pitchType: selectedPitch.pitchType,
 				velocity: selectedPitch.velocity,
@@ -116,7 +118,7 @@ export const PitchForm = ({
 			try {
 				await addDoc(pitchesCollRef, {
 					batterHand: values.batterHand,
-					fullName: values.pitcher,
+					fullName: selectedPitcherName,
 					pitchDate: Timestamp.fromDate(new Date()),
 					pitchType: values.pitchType,
 					velocity: values.velocity,
@@ -184,7 +186,7 @@ export const PitchForm = ({
 
 			<Form {...form}>
 				<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-					<FormField
+					{/* <FormField
 						control={form.control}
 						name="pitcher"
 						render={({ field }) => (
@@ -208,7 +210,7 @@ export const PitchForm = ({
 								<FormMessage />
 							</FormItem>
 						)}
-					/>
+					/> */}
 					<FormField
 						control={form.control}
 						name="batterHand"
