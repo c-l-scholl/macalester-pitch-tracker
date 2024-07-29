@@ -46,6 +46,7 @@ export default function useFirebaseAuth() {
 			email: user.email,
 			pfp: user.photoURL,
 		})
+		setIsLoading(false);
 	};
 
 	const logout = () => signOut(auth).then(clear);
@@ -54,7 +55,8 @@ export default function useFirebaseAuth() {
 
 		const unsubscribe = onAuthStateChanged(auth, authStateChanged);
 		return () => unsubscribe();
-	});
+	// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, []);
 
 	return {
 		authUser,

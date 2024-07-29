@@ -29,6 +29,7 @@ const UserLogin = () => {
 			console.error(err);
 		}
 	};
+
 	return (
 		<>
 			<div className="flex flex-col min-h-screen min-w-screen justify-center items-center gap-2">
@@ -39,7 +40,7 @@ const UserLogin = () => {
 				{authUser && (
 					<div className="">
 						<Button variant="link" size="lg">
-							<Link href="/pitch-data">
+							<Link href="/pitch-tracker">
                 To Pitch Tracker
               </Link>
 						</Button>
