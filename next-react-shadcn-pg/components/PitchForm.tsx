@@ -136,7 +136,6 @@ export const PitchForm = ({
 						"There was a problem with your pitch submission attempt. Please try again.",
 					variant: "destructive",
 				});
-				setIsLoading(false);
 			}
 		} else {
 			try {
@@ -163,9 +162,9 @@ export const PitchForm = ({
 						"There was a problem with your pitch update attempt. Please try again.",
 					variant: "destructive",
 				});
-				setIsLoading(false);
 			}
 		}
+		setIsLoading(false);
 		onOpenChange(false);
 
 		// could change this later for better efficiency
@@ -177,7 +176,7 @@ export const PitchForm = ({
 	}
 
 	return (
-		<div className="flex flex-col gap-2 w-[400px] min-w-[250px] border-r min-h-screen max-h-screen px-20 py-4">
+		<div className="flex flex-col">
 			<div className="flex">
 				<h1 className="mb-2 text-xl font-bold">
 					{selectedPitch ? "Change Pitch" : "New Pitch"}
@@ -186,31 +185,6 @@ export const PitchForm = ({
 
 			<Form {...form}>
 				<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-					{/* <FormField
-						control={form.control}
-						name="pitcher"
-						render={({ field }) => (
-							<FormItem>
-								<FormLabel>Pitcher</FormLabel>
-								<Select onValueChange={field.onChange} value={field.value}>
-									<FormControl>
-										<SelectTrigger>
-											<SelectValue placeholder="Select a pitcher" />
-										</SelectTrigger>
-									</FormControl>
-									<SelectContent>
-										{pitcherList && pitcherList.map((pitcher: Pitcher) => (
-											<SelectItem
-												key={pitcher.id}
-												value={pitcher.fullName}
-											>{`${pitcher.playerNumber} ${pitcher.fullName}`}</SelectItem>
-										))}
-									</SelectContent>
-								</Select>
-								<FormMessage />
-							</FormItem>
-						)}
-					/> */}
 					<FormField
 						control={form.control}
 						name="batterHand"

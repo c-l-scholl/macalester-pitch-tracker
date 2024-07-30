@@ -35,11 +35,12 @@ const getTodayTimestamp = (): Timestamp => {
 	return todayTimestamp;
 };
 
-export const streamPitchList = (callback: (snapshot: QuerySnapshot) => void) => {
+export const streamPitchList = (pitcherName: string, callback: (snapshot: QuerySnapshot) => void) => {
 	const pitchesCollRef = collection(db, "pitches");
 	const today: Timestamp = getTodayTimestamp();
 	const q = query(
 		pitchesCollRef,
+		where("fullName", "==", pitcherName),
 		where("pitchDate", ">=", today),
 		orderBy("pitchDate", "desc")
 	);
@@ -82,15 +83,14 @@ const getPitcherList = async (): Promise<Pitcher[]> => {
 export default function PitchTracker() {
 	const { toast } = useToast();
 
-	const [isLoading, setIsLoading] = useState<boolean>(false);
+	const [isTrackerLoading, setIsTrackerLoading] = useState<boolean>(false);
 	const [pitchData, setPitchData] = useState<Pitch[]>([]);
-	//const [pitcherData, setPitcherData] = useState<Pitcher[]>([]);
 	const [isChanging, setIsChanging] = useState<boolean>(false);
 	const [selectedPitch, setSelectedPitch] = useState<Pitch | null>(null);
 	const [selectedPitcherName, setSelectedPitcherName] = useState<string>("");
 
 	const onDelete = async (pitch: Pitch) => {
-		setIsLoading(true);
+		setIsTrackerLoading(true);
 		onOpenChange(false);
 		try {
 			if (pitch.id != undefined) {
@@ -134,42 +134,30 @@ export default function PitchTracker() {
 	const columns = getPitchColumns({ onEdit, onDelete });
 
 	useEffect(() => {
-		// const getPitchData = async () => {
-		// 	const data = await getPitches();
-		// 	setPitchData(data);
-		// 	setIsLoading(false);
-		// };
-		// getPitchData();
-		// console.log("re-render");
-		const unsubscribe = streamPitchList((querySnapshot) => {
+		const unsubscribe = streamPitchList(selectedPitcherName, (querySnapshot) => {
 			const filteredPitchList = querySnapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id })) as Pitch[];
 			setPitchData(filteredPitchList);
 		});
 		return () => unsubscribe();
 		
-	}, [isLoading]);
-
-	// useEffect(() => {
-	// 	const getPitcherData = async () => {
-	// 		const pitcherList = await getPitcherList();
-	// 		setPitcherData(pitcherList);
-	// 	};
-	// 	getPitcherData();
-	// }, []);
+	}, [isTrackerLoading, selectedPitcherName]);
 
 
 	return (
 		<div className="flex min-w-screen">
 			<div className="flex-none">
-				<PitcherSelecter setSelectedPitcherName={setSelectedPitcherName}/>
-				<PitchForm
-					setIsLoading={setIsLoading}
-					isChanging={isChanging}
-					selectedPitch={selectedPitch}
-					onOpenChange={onOpenChange}
-					//pitcherList={pitcherData}
-					selectedPitcherName={selectedPitcherName}
-				/>
+				<div className="flex flex-col gap-4 w-[400px] min-w-[250px] border-r min-h-screen max-h-screen px-16 py-4">
+					<PitcherSelecter setSelectedPitcherName={setSelectedPitcherName}/>
+					<PitchForm
+						setIsLoading={setIsTrackerLoading}
+						isChanging={isChanging}
+						selectedPitch={selectedPitch}
+						onOpenChange={onOpenChange}
+						//pitcherList={pitcherData}
+						selectedPitcherName={selectedPitcherName}
+					/>
+				</div>
+				
 			</div>
 
 			<div className="flex-grow p-4 mx-4">
@@ -178,8 +166,8 @@ export default function PitchTracker() {
 					<PitchCount pitchCount={pitchData.length} />
 				</div>
 
-				{isLoading && <span>Loading</span>}
-				{!isLoading && <DataTable columns={columns} data={pitchData} />}
+				{isTrackerLoading && <span>Loading</span>}
+				{!isTrackerLoading && <DataTable columns={columns} data={pitchData} />}
 			</div>
 		</div>
 	);
