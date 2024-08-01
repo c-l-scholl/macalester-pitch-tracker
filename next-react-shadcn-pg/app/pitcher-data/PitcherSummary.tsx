@@ -15,29 +15,13 @@ import {
 	Timestamp,
 	where,
 	onSnapshot,
-	DocumentData,
-	FirestoreError,
 	QuerySnapshot,
-	SnapshotListenOptions,
-	DocumentSnapshot,
 } from "firebase/firestore";
 import { useToast } from "@/components/ui/use-toast";
 import PitchCount from "../pitch-tracker/PitchCount";
 import SplitsData from "./SplitsData";
-import {
-	Select,
-	SelectContent,
-	SelectItem,
-	SelectTrigger,
-	SelectValue,
-} from "@/components/ui/select";
 import DatePicker from "@/components/DatePicker";
-
-export type Pitcher = {
-	id: string;
-	fullName: string;
-	playerNumber: number;
-};
+import PitcherSelecter from "@/components/PitcherSelecter";
 
 const getStartTimestamp = (date: Date): Timestamp => {
 	const dayStart = date;
@@ -62,47 +46,11 @@ export const streamPitchList = (
 	return onSnapshot(q, callback);
 };
 
-async function getPitches(
-	pitcherName: string,
-	date: Date
-): Promise<FullPitchData[]> {
-	const pitchesCollRef = collection(db, "pitches");
-	const dateAsTimestamp: Timestamp = getStartTimestamp(date);
-
-	const q = query(
-		pitchesCollRef,
-		where("fullName", "==", pitcherName),
-		where("pitchDate", ">=", dateAsTimestamp),
-		orderBy("pitchDate", "desc")
-	);
-
-	const data = await getDocs(q);
-	const filteredData = data.docs.map((doc: QueryDocumentSnapshot) => ({
-		...doc.data(),
-		id: doc.id,
-	})) as FullPitchData[];
-	return filteredData;
-}
-
-const getPitcherList = async (): Promise<Pitcher[]> => {
-	const pitcherCollRef = collection(db, "pitcher");
-	const q = query(pitcherCollRef, orderBy("playerNumber", "asc"));
-	const pitcherData = await getDocs(q);
-	const filteredPitcherData = pitcherData.docs.map(
-		(doc: QueryDocumentSnapshot) => ({
-			...doc.data(),
-			id: doc.id,
-		})
-	) as Pitcher[];
-	return filteredPitcherData;
-};
-
 export default function PitchTracker() {
 	const { toast } = useToast();
 
 	const [isLoading, setIsLoading] = useState<boolean>(false);
 	const [pitchData, setPitchData] = useState<FullPitchData[]>([]);
-	const [pitcherData, setPitcherData] = useState<Pitcher[]>([]);
 	const [selectedPitcherName, setSelectedPitcherName] = useState<string>("");
 	const [selectedDate, setSelectedDate] = useState<Date>(new Date());
 
@@ -144,17 +92,10 @@ export default function PitchTracker() {
 		}
 	};
 
-	const getPitcherData = async () => {
-		const pitcherList = await getPitcherList();
-		setPitcherData(pitcherList);
-	};
-	if (pitcherData.length === 0) {
-		getPitcherData();
-	}
-
 	const columns = getFullPitchDataColumns({ onEdit, onDelete });
 
 	useEffect(() => {
+		setIsLoading(true);
 		const unsubscribe = streamPitchList(
 			selectedPitcherName,
 			selectedDate,
@@ -165,30 +106,16 @@ export default function PitchTracker() {
 				setPitchData(updatedPitches);
 			},
 		);
+		setIsLoading(false);
 		return () => unsubscribe();
 	}, [selectedPitcherName, selectedDate, setPitchData]);
 
 	return (
 		<div className="flex flex-row">
 			<div className="sticky flex flex-col gap-2 w-[300px] min-w-[300px] border-r min-h-screen p-4">
-				<Select
-					onValueChange={(value: string) => setSelectedPitcherName(value)}
-				>
-					<SelectTrigger className="w-[180px]">
-						<SelectValue placeholder="Select a pitcher..." />
-					</SelectTrigger>
-					<SelectContent>
-						{pitcherData &&
-							pitcherData.map((pitcher: Pitcher) => (
-								<SelectItem
-									key={pitcher.id}
-									value={pitcher.fullName}
-								>{`${pitcher.playerNumber} ${pitcher.fullName}`}</SelectItem>
-							))}
-					</SelectContent>
-				</Select>
+				<PitcherSelecter setSelectedPitcherName={setSelectedPitcherName}/>
 				<DatePicker date={selectedDate} setDate={setSelectedDate} />
-				<SplitsData selectedPitcherName={selectedPitcherName} selectedTimestamp={getStartTimestamp(selectedDate)}/>
+				<SplitsData pitchData={pitchData}/>
 			</div>
 
 			<div className="flex-grow p-4 mx-4">

@@ -56,64 +56,68 @@ export const PlayerMod = () => {
 	}
 
 	return (
-		<Form {...form}>
-			<form onSubmit={form.handleSubmit(onSubmit)} className="w-2/3 space-y-6">
-				<FormField
-					control={form.control}
-					name="fullName"
-					render={({ field }) => (
-						<FormItem>
-							<FormLabel>Name</FormLabel>
-							<FormControl>
-								<Input placeholder="Enter your name..." {...field} />
-							</FormControl>
-							<FormMessage />
-						</FormItem>
-					)}
-				/>
-				<FormField
-					control={form.control}
-					name="playerNumber"
-					render={({ field }) => (
-						<FormItem>
-							<FormLabel>Number</FormLabel>
-							<FormControl>
-								<Input
-									type="number"
-									min={0}
-									max={99}
-									placeholder="Enter your number..."
-									{...field}
-									onChange={(event) => field.onChange(+event.target.value)}
-								/>
-							</FormControl>
-							<FormMessage />
-						</FormItem>
-					)}
-				/>
-				<FormField
-					control={form.control}
-					name="gradYear"
-					render={({ field }) => (
-						<FormItem>
-							<FormLabel>Grad Year</FormLabel>
-							<FormControl>
-							<Input
-									type="number"
-									min={2024}
-									max={3000}
-									placeholder="Enter your graduation year..."
-									{...field}
-									onChange={(event) => field.onChange(+event.target.value)}
-								/>
-							</FormControl>
-							<FormMessage />
-						</FormItem>
-					)}
-				/>
-				<Button type="submit">Add Player</Button>
-			</form>
-		</Form>
+		<div className="flex items-center justify-center min-w-[400px] p-4">
+				<Form {...form}>
+					<form onSubmit={form.handleSubmit(onSubmit)} className="w-2/3 space-y-6">
+						<FormField
+							control={form.control}
+							name="fullName"
+							render={({ field }) => (
+								<FormItem>
+									<FormLabel>Name</FormLabel>
+									<FormControl>
+										<Input placeholder="Enter your name..." {...field} />
+									</FormControl>
+									<FormMessage />
+								</FormItem>
+							)}
+						/>
+						<FormField
+							control={form.control}
+							name="playerNumber"
+							render={({ field }) => (
+								<FormItem>
+									<FormLabel>Number</FormLabel>
+									<FormControl>
+										<Input
+											type="number"
+											min={0}
+											max={99}
+											placeholder="Enter your number..."
+											{...field}
+											onChange={(event) => field.onChange(+event.target.value)}
+										/>
+									</FormControl>
+									<FormMessage />
+								</FormItem>
+							)}
+						/>
+						<FormField
+							control={form.control}
+							name="gradYear"
+							render={({ field }) => (
+								<FormItem>
+									<FormLabel>Grad Year</FormLabel>
+									<FormControl>
+									<Input
+											type="number"
+											min={2024}
+											max={3000}
+											placeholder="Enter your graduation year..."
+											{...field}
+											onChange={(event) => field.onChange(+event.target.value)}
+										/>
+									</FormControl>
+									<FormMessage />
+								</FormItem>
+							)}
+						/>
+						<div className="flex justify-end">
+							<Button type="submit">Add Player</Button>
+						</div>
+					</form>
+				</Form>
+		</div>
 	);
 }
 

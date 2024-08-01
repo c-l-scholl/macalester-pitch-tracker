@@ -1,10 +1,14 @@
 "use client";
-
-import { Pitcher } from "@/app/pitch-tracker/PitchTracker";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
 import { db } from "@/firebase/clientApp";
 import { collection, query, orderBy, getDocs, QueryDocumentSnapshot } from "firebase/firestore";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
+
+export type Pitcher = {
+	id: string;
+	fullName: string;
+	playerNumber: number;
+};
 
 const getPitcherList = async (): Promise<Pitcher[]> => {
 	const pitcherCollRef = collection(db, "pitcher");
@@ -20,8 +24,6 @@ const getPitcherList = async (): Promise<Pitcher[]> => {
 };
 
 interface PitcherSelecterProps {
-	// pitcherData: Pitcher[];
-	// setPitcherData: Dispatch<SetStateAction<Pitcher[]>>;
 	setSelectedPitcherName: Dispatch<SetStateAction<string>>;
 }
 

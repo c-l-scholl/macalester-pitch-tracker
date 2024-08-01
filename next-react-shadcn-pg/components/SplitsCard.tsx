@@ -20,6 +20,7 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@/components/ui/card";
+import { Pitch } from "@/app/pitch-tracker/columns";
 
 const getSpecificPitchData = async (pitcherName: string, type: string, collRef: CollectionReference, ts: Timestamp) => {
 	
@@ -151,34 +152,25 @@ const formatSLG = (slg: number): string => {
 
 interface SplitsCardProps {
 	pitchType: string;
-	selectedPitcherName: string;
-	selectedTimestamp: Timestamp;
+	pitchList: FullPitchData[] | null;
 }
 
-const SplitsCard = ({ pitchType, selectedPitcherName, selectedTimestamp }: SplitsCardProps) => {
-	const [stats, setStats] = useState<FullPitchData[]>([]);
+const SplitsCard = ({ pitchType, pitchList }: SplitsCardProps) => {
 	const [show, setShow] = useState<boolean>(false);
-
-	const pitchesCollRef = collection(db, "pitches");
+	const [stats, setStats] = useState<FullPitchData[] | null>(null);
+	const [kSplitsStr, setKSplitsStr] = useState<string>("");
+	const [slgStr, setSlgStr] = useState<string>("");
 
 	useEffect(() => {
-		const getData = async () => {
-			const d = await getSpecificPitchData(selectedPitcherName, pitchType, pitchesCollRef, selectedTimestamp);
-			if (d.length === 0) {
-				setShow(false);
-			} else {
-				setShow(true);
-			}
-			setStats(d);
-		};
-		getData();
-	}, [pitchType, selectedPitcherName, pitchesCollRef, selectedTimestamp]);
-
-	// Calculate Strike percentage
-	const kSplitsStr: string = calculateKSplits(stats);
-	
-	// Calculate SLG 
-	const slgStr = calculateSLG(stats);
+		setStats(pitchList ?? null);
+		if (stats && stats.length > 0) {
+			setKSplitsStr(calculateKSplits(stats));
+			setSlgStr(calculateSLG(stats));
+			setShow(true);
+		} else {
+			setShow(false);
+		}
+	}, [pitchList, stats])
 
 	return (
 		<div>

@@ -35,7 +35,10 @@ const getTodayTimestamp = (): Timestamp => {
 	return todayTimestamp;
 };
 
-export const streamPitchList = (pitcherName: string, callback: (snapshot: QuerySnapshot) => void) => {
+export const streamPitchList = (
+	pitcherName: string,
+	callback: (snapshot: QuerySnapshot) => void
+) => {
 	const pitchesCollRef = collection(db, "pitches");
 	const today: Timestamp = getTodayTimestamp();
 	const q = query(
@@ -126,7 +129,7 @@ export default function PitchTracker() {
 	// 	const pitcherList = await getPitcherList();
 	// 	setPitcherData(pitcherList);
 	// };
-	
+
 	// if (pitcherData.length === 0) {
 	// 	getPitcherData();
 	// }
@@ -134,20 +137,24 @@ export default function PitchTracker() {
 	const columns = getPitchColumns({ onEdit, onDelete });
 
 	useEffect(() => {
-		const unsubscribe = streamPitchList(selectedPitcherName, (querySnapshot) => {
-			const filteredPitchList = querySnapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id })) as Pitch[];
-			setPitchData(filteredPitchList);
-		});
+		const unsubscribe = streamPitchList(
+			selectedPitcherName,
+			(querySnapshot) => {
+				const filteredPitchList = querySnapshot.docs.map((doc) => ({
+					...doc.data(),
+					id: doc.id,
+				})) as Pitch[];
+				setPitchData(filteredPitchList);
+			}
+		);
 		return () => unsubscribe();
-		
 	}, [isTrackerLoading, selectedPitcherName]);
-
 
 	return (
 		<div className="flex min-w-screen">
 			<div className="flex-none">
 				<div className="flex flex-col gap-4 w-[400px] min-w-[250px] border-r min-h-screen max-h-screen px-16 py-4">
-					<PitcherSelecter setSelectedPitcherName={setSelectedPitcherName}/>
+					<PitcherSelecter setSelectedPitcherName={setSelectedPitcherName} />
 					<PitchForm
 						setIsLoading={setIsTrackerLoading}
 						isChanging={isChanging}
@@ -157,7 +164,6 @@ export default function PitchTracker() {
 						selectedPitcherName={selectedPitcherName}
 					/>
 				</div>
-				
 			</div>
 
 			<div className="flex-grow p-4 mx-4">

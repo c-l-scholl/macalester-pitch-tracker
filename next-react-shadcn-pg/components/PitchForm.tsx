@@ -16,32 +16,18 @@ import {
 import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import {
-	Select,
-	SelectContent,
-	SelectItem,
-	SelectTrigger,
-	SelectValue,
-} from "@/components/ui/select";
-import {
-	QueryDocumentSnapshot,
 	Timestamp,
 	addDoc,
 	collection,
 	doc,
-	getDocs,
-	orderBy,
-	query,
 	setDoc,
 } from "firebase/firestore";
 import { db, auth } from "@/firebase/clientApp";
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useEffect } from "react";
 import { Pitch } from "@/app/pitch-tracker/columns";
 import { useToast } from "./ui/use-toast";
 
 const formSchema = z.object({
-	// pitcher: z.string().min(2, {
-	// 	message: "Username must be at least 2 characters.",
-	// }),
 	batterHand: z.enum(["Left", "Right"], {
 		required_error: "You need to select a batter handedness.",
 	}),
@@ -61,7 +47,6 @@ interface PitchFormProps {
 	onOpenChange: (value: boolean) => void;
 	selectedPitch: Pitch | null;
 	isChanging: boolean;
-	// pitcherList: Pitcher[] | null;
 	selectedPitcherName: string;
 }
 
@@ -76,7 +61,6 @@ export const PitchForm = ({
 	selectedPitch,
 	isChanging,
 	onOpenChange,
-	//pitcherList,
 	selectedPitcherName,
 }: PitchFormProps) => {
 	const { toast } = useToast();
@@ -85,7 +69,6 @@ export const PitchForm = ({
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
 		defaultValues: {
-			//pitcher: "",
 			batterHand: "Right",
 			velocity: 50,
 			pitchType: "FB",
@@ -96,7 +79,6 @@ export const PitchForm = ({
 	useEffect(() => {
 		if (selectedPitch) {
 			form.reset({
-				//pitcher: selectedPitch.fullName,
 				batterHand: selectedPitch.batterHand,
 				pitchType: selectedPitch.pitchType,
 				velocity: selectedPitch.velocity,
@@ -123,7 +105,6 @@ export const PitchForm = ({
 					pitchType: values.pitchType,
 					velocity: values.velocity,
 					result: values.contact,
-					// now there is user connected with each pitch
 					userId: auth?.currentUser?.email,
 				});
 				toast({
