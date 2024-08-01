@@ -10,17 +10,12 @@ interface SplitsDataProps {
 }
 
 const SplitsData = ({ pitchData }: SplitsDataProps) => {
-
-	// later get selected Pitcher from PitcherSummary and PitcherSelect
-	const [pitchKeysList, setPitchKeyslist] = useState<string[]>([]);
-	const [isLoading, setIsLoading] = useState<boolean>(false);
 	const [pitchMapState, setPitchMapState] = useState<Map<string, FullPitchData[]> | null>(null);
 	let pitchMap = new Map<string, FullPitchData[]>();
 
 	useEffect(() => {
-		//setIsLoading(true);
 		pitchMap.clear();		
-		
+
 		if (pitchData && pitchData.length > 0) {
 			for (const pitch of pitchData) {
 				const pitches = pitchMap.get(pitch.pitchType) ?? [];
@@ -30,7 +25,6 @@ const SplitsData = ({ pitchData }: SplitsDataProps) => {
 		}
 
 		setPitchMapState(pitchMap ?? null);
-		//setIsLoading(false);
 	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [pitchData]);
 

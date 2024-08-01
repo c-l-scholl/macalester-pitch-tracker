@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import UserItem from "./user-item";
+import UserItem from "./UserItem";
 import {
 	NavigationMenu,
 	NavigationMenuItem,
@@ -9,7 +9,7 @@ import {
 	navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
 
-export default function Header() {
+export default function NavHeader() {
 	return (
 		<div className="sticky top-0 flex flex-row justify-between gap-2 min-w-screen p-4 border-b items-center bg-slate-100 shadow-md z-50">
 			<div>

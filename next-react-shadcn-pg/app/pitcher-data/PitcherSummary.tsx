@@ -78,6 +78,7 @@ export default function PitchTracker() {
 				variant: "destructive",
 			});
 		}
+		setIsLoading(false);
 	};
 	// maybe change on edit to only take pitch type
 	const onEdit = (pitch: FullPitchData) => {
