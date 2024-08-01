@@ -13,13 +13,13 @@ export type AuthUser = {
 
 interface AuthContextType {
   authUser: AuthUser | null;
-  isLoading: boolean;
+  isAuthLoading: boolean;
 	logout: () => void;
 }
 
 const AuthUserContext = createContext<AuthContextType>({
 	authUser: null,
-	isLoading: true,
+	isAuthLoading: true,
 	logout: () => {},
 });
 
@@ -27,15 +27,15 @@ const AuthUserContext = createContext<AuthContextType>({
 
 export default function useFirebaseAuth() {
 	const [authUser, setAuthUser] = useState<AuthUser | null>(null);
-	const [isLoading, setIsLoading] = useState<boolean>(true);
+	const [isAuthLoading, setIsAuthLoading] = useState<boolean>(true);
 
 	const clear = () => {
 		setAuthUser(null);
-		setIsLoading(false);
+		setIsAuthLoading(false);
 	};
 
 	const authStateChanged = async (user: any) => {
-		setIsLoading(true);
+		setIsAuthLoading(true);
 		if (!user) {
 			clear();
 			return;
@@ -46,7 +46,7 @@ export default function useFirebaseAuth() {
 			email: user.email,
 			pfp: user.photoURL,
 		})
-		setIsLoading(false);
+		setIsAuthLoading(false);
 	};
 
 	const logout = () => signOut(auth).then(clear);
@@ -59,7 +59,7 @@ export default function useFirebaseAuth() {
 
 	return {
 		authUser,
-		isLoading,
+		isAuthLoading,
 		logout,
 	};
 }
