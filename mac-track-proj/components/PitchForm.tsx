@@ -15,13 +15,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import {
-	Timestamp,
-	addDoc,
-	collection,
-	doc,
-	setDoc,
-} from "firebase/firestore";
+import { Timestamp, addDoc, collection, doc, setDoc } from "firebase/firestore";
 import { db, auth } from "@/firebase/clientApp";
 import { Dispatch, SetStateAction, useEffect } from "react";
 import { Pitch } from "@/app/pitch-tracker/columns";
@@ -48,12 +42,6 @@ interface PitchFormProps {
 	selectedPitch: Pitch | null;
 	isChanging: boolean;
 	selectedPitcherName: string;
-}
-
-interface Pitcher {
-	playerNumber: number;
-	fullName: string;
-	id?: string;
 }
 
 export const PitchForm = ({
@@ -158,8 +146,6 @@ export const PitchForm = ({
 
 	return (
 		<div className="flex flex-col">
-			
-
 			<Form {...form}>
 				<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
 					<FormField

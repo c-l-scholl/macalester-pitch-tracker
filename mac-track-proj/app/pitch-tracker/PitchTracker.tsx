@@ -5,50 +5,11 @@ import { PitchForm } from "@/components/PitchForm";
 import { Pitch, getPitchColumns } from "./columns";
 import { DataTable } from "@/components/TrackerDataTable";
 import { db } from "@/firebase/clientApp";
-import {
-	getDocs,
-	collection,
-	query,
-	QueryDocumentSnapshot,
-	orderBy,
-	deleteDoc,
-	doc,
-	Timestamp,
-	where,
-	onSnapshot,
-	QuerySnapshot,
-} from "firebase/firestore";
-import PitchCount from "./PitchCount";
+import { deleteDoc, doc } from "firebase/firestore";
+import PitchCount from "../../components/PitchCount";
 import { useToast } from "@/components/ui/use-toast";
 import PitcherSelecter from "@/components/PitcherSelecter";
-
-export type Pitcher = {
-	id: string;
-	fullName: string;
-	playerNumber: number;
-};
-
-const getTodayTimestamp = (): Timestamp => {
-	const todayStart = new Date();
-	todayStart.setHours(0, 0, 0, 0);
-	const todayTimestamp: Timestamp = Timestamp.fromDate(todayStart);
-	return todayTimestamp;
-};
-
-export const streamPitchList = (
-	pitcherName: string,
-	callback: (snapshot: QuerySnapshot) => void
-) => {
-	const pitchesCollRef = collection(db, "pitches");
-	const today: Timestamp = getTodayTimestamp();
-	const q = query(
-		pitchesCollRef,
-		where("fullName", "==", pitcherName),
-		where("pitchDate", ">=", today),
-		orderBy("pitchDate", "desc")
-	);
-	return onSnapshot(q, callback);
-};
+import { streamDatePitchList } from "../helpers/PitchQueries";
 
 export default function PitchTracker() {
 	const { toast } = useToast();
@@ -95,8 +56,9 @@ export default function PitchTracker() {
 	const columns = getPitchColumns({ onEdit, onDelete });
 
 	useEffect(() => {
-		const unsubscribe = streamPitchList(
+		const unsubscribe = streamDatePitchList(
 			selectedPitcherName,
+			new Date(),
 			(querySnapshot) => {
 				const filteredPitchList = querySnapshot.docs.map((doc) => ({
 					...doc.data(),

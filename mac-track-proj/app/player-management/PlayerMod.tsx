@@ -1,5 +1,4 @@
 "use client";
-import { Pitcher } from "@/app/pitch-tracker/PitchTracker";
 import { db } from "@/firebase/clientApp";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -9,7 +8,6 @@ import { Button } from "@/components/ui/button";
 import {
 	Form,
 	FormControl,
-	FormDescription,
 	FormField,
 	FormItem,
 	FormLabel,
@@ -17,8 +15,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/use-toast";
-import { useEffect } from "react";
-import { addDoc, collection, doc, setDoc } from "firebase/firestore";
+import { doc, setDoc } from "firebase/firestore";
 
 const FormSchema = z.object({
 	fullName: z.string().min(2, {
@@ -44,6 +41,7 @@ export const PlayerMod = () => {
 
 	async function onSubmit(data: z.infer<typeof FormSchema>) {
 		// TODO: Make sure that this adds players and prevents duplicates correctly
+		// TODO: Add toasts for failures and successes
 		//const pitcherCollRef = collection(db, "pitcher");
 		const fullNameDash = data.fullName.replace(" ", "-");
 		const playerDocId = doc(db, "pitcher", `${data.gradYear}${fullNameDash}${data.playerNumber}`);

@@ -5,57 +5,18 @@ import { FullPitchData, getFullPitchDataColumns } from "./SummaryColumns";
 import { FullDataTable } from "@/components/FullDataTable";
 import { db } from "@/firebase/clientApp";
 import {
-	getDocs,
-	collection,
-	query,
 	QueryDocumentSnapshot,
-	orderBy,
 	deleteDoc,
 	doc,
-	Timestamp,
-	where,
-	onSnapshot,
-	QuerySnapshot,
 } from "firebase/firestore";
 import { useToast } from "@/components/ui/use-toast";
-import PitchCount from "../pitch-tracker/PitchCount";
+import PitchCount from "../../components/PitchCount";
 import SplitsData from "./SplitsData";
 import DatePicker from "@/components/DatePicker";
 import PitcherSelecter from "@/components/PitcherSelecter";
+import { streamDatePitchList } from "../helpers/PitchQueries";
 
-const getStartTimestamp = (date: Date): Timestamp => {
-	let dayStart = date;
-	dayStart.setHours(0, 0, 0, 0);
-	const dayStartTimestamp: Timestamp = Timestamp.fromDate(dayStart);
-	return dayStartTimestamp;
-};
-
-const getEndTimestamp = (date: Date): Timestamp => {
-	let dayEnd = date;
-	dayEnd.setHours(23, 59, 59, 999);
-	const dayEndTimestamp: Timestamp = Timestamp.fromDate(dayEnd);
-	return dayEndTimestamp;
-}
-
-export const streamPitchList = (
-	pitcherName: string,
-	date: Date,
-	callback: (snapshot: QuerySnapshot) => void
-) => {
-	const pitchesCollRef = collection(db, "pitches");
-	const startTime: Timestamp = getStartTimestamp(date);
-	const endTime: Timestamp = getEndTimestamp(date);
-	const q = query(
-		pitchesCollRef,
-		where("fullName", "==", pitcherName),
-		where("pitchDate", ">=", startTime),
-		where("pitchDate", "<=", endTime),
-		orderBy("pitchDate", "desc")
-	);
-	return onSnapshot(q, callback);
-};
-
-export default function PitchTracker() {
+export default function PitcherSummary() {
 	const { toast } = useToast();
 
 	const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -89,7 +50,7 @@ export default function PitchTracker() {
 		}
 		setIsLoading(false);
 	};
-	// maybe change on edit to only take pitch type
+	// TODO: maybe change on edit to only take pitch type
 	const onEdit = (pitch: FullPitchData) => {
 		setSelectedPitch(pitch);
 		setIsChanging(true);
@@ -106,7 +67,7 @@ export default function PitchTracker() {
 
 	useEffect(() => {
 		setIsLoading(true);
-		const unsubscribe = streamPitchList(
+		const unsubscribe = streamDatePitchList(
 			selectedPitcherName,
 			selectedDate,
 			(querySnapshot) => {
