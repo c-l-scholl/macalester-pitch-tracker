@@ -18,7 +18,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/use-toast";
 import { useEffect } from "react";
-import { addDoc, collection, setDoc } from "firebase/firestore";
+import { addDoc, collection, doc, setDoc } from "firebase/firestore";
 
 const FormSchema = z.object({
 	fullName: z.string().min(2, {
@@ -43,9 +43,12 @@ export const PlayerMod = () => {
 	});
 
 	async function onSubmit(data: z.infer<typeof FormSchema>) {
-		const pitcherCollRef = collection(db, "pitcher");
+		// TODO: Make sure that this adds players and prevents duplicates correctly
+		//const pitcherCollRef = collection(db, "pitcher");
+		const fullNameDash = data.fullName.replace(" ", "-");
+		const playerDocId = doc(db, "pitcher", `${data.gradYear}${fullNameDash}${data.playerNumber}`);
 		try {
-			await addDoc(pitcherCollRef, {
+			await setDoc(playerDocId, {
 				fullName: data.fullName,
 				playerNumber: data.playerNumber,
 				gradYear: data.gradYear,
