@@ -1,43 +1,14 @@
 "use client";
 
-import { db } from "@/firebase/clientApp";
-import {
-	collection,
-	CollectionReference,
-	getDocs,
-	query,
-	QueryDocumentSnapshot,
-	Timestamp,
-	where,
-} from "firebase/firestore";
 import { FullPitchData } from "@/app/pitcher-data/SummaryColumns";
 import { useEffect, useState } from "react";
 import {
 	Card,
 	CardContent,
 	CardDescription,
-	CardFooter,
 	CardHeader,
 	CardTitle,
 } from "@/components/ui/card";
-import { Pitch } from "@/app/pitch-tracker/columns";
-
-const getSpecificPitchData = async (pitcherName: string, type: string, collRef: CollectionReference, ts: Timestamp) => {
-	
-	const q = query(
-		collRef,
-		where("fullName", "==", pitcherName),
-		where("pitchDate", ">=", ts),
-		where("pitchType", "==", type),
-	);
-
-	const data = await getDocs(q);
-	const filteredData = data.docs.map((doc: QueryDocumentSnapshot) => ({
-		...doc.data(),
-		id: doc.id,
-	})) as FullPitchData[];
-	return filteredData;
-};
 
 const calculateKSplits = (stats: FullPitchData[]): string => {
 	let rfStrikes: number = 0;

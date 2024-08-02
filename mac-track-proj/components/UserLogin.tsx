@@ -7,7 +7,7 @@ import { auth, googleProvider } from "@/firebase/clientApp";
 import { signInWithPopup } from "firebase/auth";
 import { useAuth } from "@/firebase/auth";
 import { useToast } from "./ui/use-toast";
-import { useEffect } from "react";
+import { useEffect, useLayoutEffect } from "react";
 
 const UserLogin = () => {
 	const { authUser, isAuthLoading } = useAuth();
@@ -31,7 +31,7 @@ const UserLogin = () => {
 		}
 	};
 
-	useEffect(() => {}, [isAuthLoading]);
+	useLayoutEffect(() => {}, [isAuthLoading]);
 
 	return (
 		<>

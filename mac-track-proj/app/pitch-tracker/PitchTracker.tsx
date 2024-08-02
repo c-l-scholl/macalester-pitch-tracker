@@ -50,39 +50,6 @@ export const streamPitchList = (
 	return onSnapshot(q, callback);
 };
 
-async function getPitches(): Promise<Pitch[]> {
-	// needs to be expanded to take specific pitcher
-	// maybe a component above the form and this page that gets the pitcher
-	const pitchesCollRef = collection(db, "pitches");
-	const today: Timestamp = getTodayTimestamp();
-
-	const q = query(
-		pitchesCollRef,
-		where("pitchDate", ">=", today),
-		orderBy("pitchDate", "desc")
-	);
-	const data = await getDocs(q);
-	const filteredData = data.docs.map((doc: QueryDocumentSnapshot) => ({
-		...doc.data(),
-		id: doc.id,
-	})) as Pitch[];
-	return filteredData;
-}
-
-// this is identical method, maybe pass this out to somewhere else
-const getPitcherList = async (): Promise<Pitcher[]> => {
-	const pitcherCollRef = collection(db, "pitcher");
-	const q = query(pitcherCollRef, orderBy("playerNumber", "asc"));
-	const pitcherData = await getDocs(q);
-	const filteredPitcherData = pitcherData.docs.map(
-		(doc: QueryDocumentSnapshot) => ({
-			...doc.data(),
-			id: doc.id,
-		})
-	) as Pitcher[];
-	return filteredPitcherData;
-};
-
 export default function PitchTracker() {
 	const { toast } = useToast();
 
@@ -125,15 +92,6 @@ export default function PitchTracker() {
 		}
 	};
 
-	// const getPitcherData = async () => {
-	// 	const pitcherList = await getPitcherList();
-	// 	setPitcherData(pitcherList);
-	// };
-
-	// if (pitcherData.length === 0) {
-	// 	getPitcherData();
-	// }
-
 	const columns = getPitchColumns({ onEdit, onDelete });
 
 	useEffect(() => {
@@ -153,14 +111,18 @@ export default function PitchTracker() {
 	return (
 		<div className="flex min-w-screen">
 			<div className="flex-none">
-				<div className="flex flex-col gap-4 w-[400px] min-w-[250px] border-r min-h-screen max-h-screen px-16 py-4">
+				<div className="flex flex-col gap-3 w-[400px] min-w-[250px] border-r min-h-screen max-h-screen px-16 py-4">
+					<div className="flex">
+						<h1 className="mb-2 text-xl font-bold">
+							{selectedPitch ? "Change Pitch" : "New Pitch"}
+						</h1>
+					</div>
 					<PitcherSelecter setSelectedPitcherName={setSelectedPitcherName} />
 					<PitchForm
 						setIsLoading={setIsTrackerLoading}
 						isChanging={isChanging}
 						selectedPitch={selectedPitch}
 						onOpenChange={onOpenChange}
-						//pitcherList={pitcherData}
 						selectedPitcherName={selectedPitcherName}
 					/>
 				</div>

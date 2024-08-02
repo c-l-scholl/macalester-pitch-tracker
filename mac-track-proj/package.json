@@ -1,8 +1,10 @@
 {
-  "name": "next-react-shadcn-pg",
+  "name": "mac-track-proj",
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "serve": "firebase emulators:start",
+    "deploy": "firebase deploy --only hosting",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
@@ -28,6 +30,7 @@
     "date-fns": "^3.6.0",
     "dotenv": "^16.4.5",
     "firebase": "^10.12.2",
+    "firebase-tools": "^13.15.0",
     "lucide-react": "^0.396.0",
     "next": "^14.2.5",
     "react": "^18",

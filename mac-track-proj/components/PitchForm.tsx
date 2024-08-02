@@ -158,11 +158,7 @@ export const PitchForm = ({
 
 	return (
 		<div className="flex flex-col">
-			<div className="flex">
-				<h1 className="mb-2 text-xl font-bold">
-					{selectedPitch ? "Change Pitch" : "New Pitch"}
-				</h1>
-			</div>
+			
 
 			<Form {...form}>
 				<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">

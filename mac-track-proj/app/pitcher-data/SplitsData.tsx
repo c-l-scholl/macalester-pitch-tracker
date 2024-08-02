@@ -1,7 +1,5 @@
 "use client";
 import SplitsCard from "@/components/SplitsCard";
-import { Timestamp } from "firebase/firestore";
-import { Pitch } from "../pitch-tracker/columns";
 import { useEffect, useState } from "react";
 import { FullPitchData } from "./SummaryColumns";
 
@@ -32,7 +30,7 @@ const SplitsData = ({ pitchData }: SplitsDataProps) => {
 
 	return (
 		<>
-			<div className="flex flex-col gap-2">
+			<div className="flex flex-col gap-2 w-full">
 				{pitchMapState && Array.from(pitchMapState.entries()).map(([key, list]) => (
 					<div key={key}>
 						<SplitsCard pitchType={list[0].pitchType} pitchList={list}/>

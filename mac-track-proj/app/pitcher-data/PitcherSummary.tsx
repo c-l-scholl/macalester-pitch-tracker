@@ -24,11 +24,18 @@ import DatePicker from "@/components/DatePicker";
 import PitcherSelecter from "@/components/PitcherSelecter";
 
 const getStartTimestamp = (date: Date): Timestamp => {
-	const dayStart = date;
+	let dayStart = date;
 	dayStart.setHours(0, 0, 0, 0);
-	const dayTimestamp: Timestamp = Timestamp.fromDate(dayStart);
-	return dayTimestamp;
+	const dayStartTimestamp: Timestamp = Timestamp.fromDate(dayStart);
+	return dayStartTimestamp;
 };
+
+const getEndTimestamp = (date: Date): Timestamp => {
+	let dayEnd = date;
+	dayEnd.setHours(23, 59, 59, 999);
+	const dayEndTimestamp: Timestamp = Timestamp.fromDate(dayEnd);
+	return dayEndTimestamp;
+}
 
 export const streamPitchList = (
 	pitcherName: string,
@@ -36,11 +43,13 @@ export const streamPitchList = (
 	callback: (snapshot: QuerySnapshot) => void
 ) => {
 	const pitchesCollRef = collection(db, "pitches");
-	const dateAsTimestamp: Timestamp = getStartTimestamp(date);
+	const startTime: Timestamp = getStartTimestamp(date);
+	const endTime: Timestamp = getEndTimestamp(date);
 	const q = query(
 		pitchesCollRef,
 		where("fullName", "==", pitcherName),
-		where("pitchDate", ">=", dateAsTimestamp),
+		where("pitchDate", ">=", startTime),
+		where("pitchDate", "<=", endTime),
 		orderBy("pitchDate", "desc")
 	);
 	return onSnapshot(q, callback);
@@ -113,10 +122,13 @@ export default function PitchTracker() {
 
 	return (
 		<div className="flex flex-row">
-			<div className="sticky flex flex-col gap-2 w-[300px] min-w-[300px] border-r min-h-screen p-4">
-				<PitcherSelecter setSelectedPitcherName={setSelectedPitcherName}/>
-				<DatePicker date={selectedDate} setDate={setSelectedDate} />
-				<SplitsData pitchData={pitchData}/>
+			<div className="sticky min-w-[300px] border-r min-h-screen items-start">
+				<div className="flex flex-col gap-2 p-4 items-start">
+					<PitcherSelecter setSelectedPitcherName={setSelectedPitcherName}/>
+					<DatePicker date={selectedDate} setDate={setSelectedDate} />
+					<SplitsData pitchData={pitchData}/>
+				</div>
+				
 			</div>
 
 			<div className="flex-grow p-4 mx-4">
