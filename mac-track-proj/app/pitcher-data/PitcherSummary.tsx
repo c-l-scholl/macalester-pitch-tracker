@@ -4,17 +4,14 @@ import React, { useState, useEffect } from "react";
 import { FullPitchData, getFullPitchDataColumns } from "./SummaryColumns";
 import { FullDataTable } from "@/components/FullDataTable";
 import { db } from "@/firebase/clientApp";
-import {
-	QueryDocumentSnapshot,
-	deleteDoc,
-	doc,
-} from "firebase/firestore";
+import { QueryDocumentSnapshot, deleteDoc, doc } from "firebase/firestore";
 import { useToast } from "@/components/ui/use-toast";
-import PitchCount from "../../components/PitchCount";
+import PitchCount from "@/components/PitchCount";
 import SplitsData from "./SplitsData";
 import DatePicker from "@/components/DatePicker";
 import PitcherSelecter from "@/components/PitcherSelecter";
-import { streamDatePitchList } from "../helpers/PitchQueries";
+import { getAllPitches, streamDatePitchList } from "@/app/helpers/PitchQueries";
+import { Button } from "@/components/ui/button";
 
 export default function PitcherSummary() {
 	const { toast } = useToast();
@@ -22,7 +19,7 @@ export default function PitcherSummary() {
 	const [isLoading, setIsLoading] = useState<boolean>(false);
 	const [pitchData, setPitchData] = useState<FullPitchData[]>([]);
 	const [selectedPitcherName, setSelectedPitcherName] = useState<string>("");
-	const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+	const [selectedDate, setSelectedDate] = useState<Date | null>(null);
 
 	const [isChanging, setIsChanging] = useState<boolean>(false);
 	const [selectedPitch, setSelectedPitch] = useState<FullPitchData | null>(
@@ -63,33 +60,59 @@ export default function PitcherSummary() {
 		}
 	};
 
+	// const getAllPitchesForPitcher = (pitcherName: string) => {
+	// 	const unsubscribe = getAllPitches(pitcherName, (querySnapshot) => {
+	// 		const updatedPitches = querySnapshot.docs.map(
+	// 			(doc: QueryDocumentSnapshot) => ({ ...doc.data(), id: doc.id })
+	// 		) as FullPitchData[];
+	// 		setPitchData(updatedPitches);
+	// 	},
+	// )
+	// }
+
 	const columns = getFullPitchDataColumns({ onEdit, onDelete });
 
 	useEffect(() => {
 		setIsLoading(true);
-		const unsubscribe = streamDatePitchList(
-			selectedPitcherName,
-			selectedDate,
-			(querySnapshot) => {
-				const updatedPitches = querySnapshot.docs.map(
-					(doc: QueryDocumentSnapshot) => ({ ...doc.data(), id: doc.id })
-				) as FullPitchData[];
-				setPitchData(updatedPitches);
-			},
-		);
-		setIsLoading(false);
-		return () => unsubscribe();
+		if (!selectedDate) {
+			const unsubscribe = getAllPitches(
+				selectedPitcherName,
+				(querySnapshot) => {
+					const updatedPitches = querySnapshot.docs.map(
+						(doc: QueryDocumentSnapshot) => ({ ...doc.data(), id: doc.id })
+					) as FullPitchData[];
+					setPitchData(updatedPitches);
+				}
+			);
+			setIsLoading(false);
+			return () => unsubscribe();
+		} else {
+			const unsubscribe = streamDatePitchList(
+				selectedPitcherName,
+				selectedDate,
+				(querySnapshot) => {
+					const updatedPitches = querySnapshot.docs.map(
+						(doc: QueryDocumentSnapshot) => ({ ...doc.data(), id: doc.id })
+					) as FullPitchData[];
+					setPitchData(updatedPitches);
+				}
+			);
+			setIsLoading(false);
+			return () => unsubscribe();
+		}
 	}, [selectedPitcherName, selectedDate, setPitchData]);
 
 	return (
 		<div className="flex flex-row">
 			<div className="sticky min-w-[300px] border-r min-h-screen items-start">
 				<div className="flex flex-col gap-2 p-4 items-start">
-					<PitcherSelecter setSelectedPitcherName={setSelectedPitcherName}/>
+					<PitcherSelecter setSelectedPitcherName={setSelectedPitcherName} />
 					<DatePicker date={selectedDate} setDate={setSelectedDate} />
-					<SplitsData pitchData={pitchData}/>
+					<Button onClick={() => setSelectedDate(null)}>
+						Get All Pitches
+					</Button>
+					<SplitsData pitchData={pitchData} />
 				</div>
-				
 			</div>
 
 			<div className="flex-grow p-4 mx-4">
