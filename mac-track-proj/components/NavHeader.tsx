@@ -9,7 +9,7 @@ import {
 	navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
 
-export default function NavHeader() {
+const NavHeader = () => {
 	return (
 		<div className="sticky top-0 flex flex-row justify-between gap-2 min-w-screen p-4 border-b items-center bg-slate-100 shadow-md z-50">
 			<div>
@@ -54,4 +54,6 @@ export default function NavHeader() {
 			</div>
 		</div>
 	);
-}
+};
+
+export default NavHeader;

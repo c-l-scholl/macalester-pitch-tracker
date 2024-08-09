@@ -19,15 +19,15 @@ import {
 
 import { Button } from "@/components/ui/button";
 
-interface DataTableProps<TData, TValue> {
+interface TrackerDataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
   data: TData[]
 }
 
-export function DataTable<TData, TValue>({
+const TrackerDataTable = <TData, TValue>({
   columns,
   data,
-}: DataTableProps<TData, TValue>) {
+}: TrackerDataTableProps<TData, TValue>) => {
   const table = useReactTable({
     data,
     columns,
@@ -102,3 +102,5 @@ export function DataTable<TData, TValue>({
     </div>
   )
 }
+
+export default TrackerDataTable;

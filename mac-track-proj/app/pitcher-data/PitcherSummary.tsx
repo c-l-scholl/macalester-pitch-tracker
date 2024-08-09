@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { FullPitchData, getFullPitchDataColumns } from "./SummaryColumns";
-import { FullDataTable } from "@/components/FullDataTable";
+import FullDataTable from "@/components/FullDataTable";
 import { db } from "@/firebase/clientApp";
 import { QueryDocumentSnapshot, deleteDoc, doc } from "firebase/firestore";
 import { useToast } from "@/components/ui/use-toast";
@@ -12,6 +12,7 @@ import DatePicker from "@/components/DatePicker";
 import PitcherSelecter from "@/components/PitcherSelecter";
 import { getAllPitches, streamDatePitchList } from "@/app/helpers/PitchQueries";
 import { Button } from "@/components/ui/button";
+import { Unsubscribe } from "firebase/auth";
 
 export default function PitcherSummary() {
 	const { toast } = useToast();
@@ -60,22 +61,13 @@ export default function PitcherSummary() {
 		}
 	};
 
-	// const getAllPitchesForPitcher = (pitcherName: string) => {
-	// 	const unsubscribe = getAllPitches(pitcherName, (querySnapshot) => {
-	// 		const updatedPitches = querySnapshot.docs.map(
-	// 			(doc: QueryDocumentSnapshot) => ({ ...doc.data(), id: doc.id })
-	// 		) as FullPitchData[];
-	// 		setPitchData(updatedPitches);
-	// 	},
-	// )
-	// }
-
 	const columns = getFullPitchDataColumns({ onEdit, onDelete });
+	
 
 	useEffect(() => {
 		setIsLoading(true);
 		if (!selectedDate) {
-			const unsubscribe = getAllPitches(
+			const unsubscribe: Unsubscribe = getAllPitches(
 				selectedPitcherName,
 				(querySnapshot) => {
 					const updatedPitches = querySnapshot.docs.map(
@@ -87,7 +79,7 @@ export default function PitcherSummary() {
 			setIsLoading(false);
 			return () => unsubscribe();
 		} else {
-			const unsubscribe = streamDatePitchList(
+			const unsubscribe: Unsubscribe = streamDatePitchList(
 				selectedPitcherName,
 				selectedDate,
 				(querySnapshot) => {

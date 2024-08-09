@@ -30,10 +30,10 @@ interface DataTableProps<TData, TValue> {
   data: TData[]
 }
 
-export function FullDataTable<TData, TValue>({
+const FullDataTable = <TData, TValue>({
   columns,
   data,
-}: DataTableProps<TData, TValue>) {
+}: DataTableProps<TData, TValue>) => {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>(
     []
@@ -131,3 +131,5 @@ export function FullDataTable<TData, TValue>({
     </div>
   )
 }
+
+export default FullDataTable;

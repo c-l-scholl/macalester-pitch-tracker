@@ -10,7 +10,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useAuth } from "@/firebase/auth";
 
-export default function UserItem() {
+const UserItem = () => {
 
 	const { authUser, logout } = useAuth();
 
@@ -42,3 +42,5 @@ export default function UserItem() {
 		</DropdownMenu>
 	);
 }
+
+export default UserItem;

@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { PitchForm } from "@/components/PitchForm";
 import { Pitch, getPitchColumns } from "./columns";
-import { DataTable } from "@/components/TrackerDataTable";
+import TrackerDataTable from "@/components/TrackerDataTable";
 import { db } from "@/firebase/clientApp";
 import { deleteDoc, doc } from "firebase/firestore";
 import PitchCount from "../../components/PitchCount";
@@ -11,7 +11,7 @@ import { useToast } from "@/components/ui/use-toast";
 import PitcherSelecter from "@/components/PitcherSelecter";
 import { streamDatePitchList } from "../helpers/PitchQueries";
 
-export default function PitchTracker() {
+const PitchTracker = () => {
 	const { toast } = useToast();
 
 	const [isTrackerLoading, setIsTrackerLoading] = useState<boolean>(false);
@@ -97,8 +97,10 @@ export default function PitchTracker() {
 				</div>
 
 				{isTrackerLoading && <span>Loading</span>}
-				{!isTrackerLoading && <DataTable columns={columns} data={pitchData} />}
+				{!isTrackerLoading && <TrackerDataTable columns={columns} data={pitchData} />}
 			</div>
 		</div>
 	);
 }
+
+export default PitchTracker;

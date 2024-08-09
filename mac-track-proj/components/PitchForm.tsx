@@ -81,7 +81,7 @@ export const PitchForm = ({
 	}, [isChanging, selectedPitch, form]);
 
 	// 2. Define a submit handler.
-	async function onSubmit(values: z.infer<typeof formSchema>) {
+	const onSubmit = async (values: z.infer<typeof formSchema>) => {
 		const pitchesCollRef = collection(db, "pitches");
 		setIsLoading(true);
 		if (!isChanging) {

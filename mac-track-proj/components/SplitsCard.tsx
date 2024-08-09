@@ -117,7 +117,10 @@ const formatSLG = (slg: number): string => {
 	if (slg === 0) {
 		return ".000";
 	}
-	let slgStr: string = String(slg);
+	let slgStr: string = String(slg.toFixed(3));
+	if (slg >= 1) {
+		return slgStr;
+	}
 	return `${slgStr[0]}.${slgStr.substring(1)}`
 }
 
