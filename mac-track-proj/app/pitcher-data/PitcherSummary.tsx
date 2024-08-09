@@ -13,6 +13,13 @@ import PitcherSelecter from "@/components/PitcherSelecter";
 import { getAllPitches, streamDatePitchList } from "@/app/helpers/PitchQueries";
 import { Button } from "@/components/ui/button";
 import { Unsubscribe } from "firebase/auth";
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
 
 export default function PitcherSummary() {
 	const { toast } = useToast();
@@ -21,6 +28,8 @@ export default function PitcherSummary() {
 	const [pitchData, setPitchData] = useState<FullPitchData[]>([]);
 	const [selectedPitcherName, setSelectedPitcherName] = useState<string>("");
 	const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+	const [dateMap, setDateMap] = useState<Map<string, Date> | null>(null);
+	const [dateSelectValue, setDateSelectValue] = useState<string>("");
 
 	const [isChanging, setIsChanging] = useState<boolean>(false);
 	const [selectedPitch, setSelectedPitch] = useState<FullPitchData | null>(
@@ -62,7 +71,11 @@ export default function PitcherSummary() {
 	};
 
 	const columns = getFullPitchDataColumns({ onEdit, onDelete });
-	
+
+	useEffect(() => {
+		setSelectedDate(null);
+		setDateSelectValue("");
+	}, [selectedPitcherName]);
 
 	useEffect(() => {
 		setIsLoading(true);
@@ -74,8 +87,15 @@ export default function PitcherSummary() {
 						(doc: QueryDocumentSnapshot) => ({ ...doc.data(), id: doc.id })
 					) as FullPitchData[];
 					setPitchData(updatedPitches);
+					const tempSet = new Map<string, Date>();
+					updatedPitches.forEach((elem) => {
+						const elemDate: Date = elem.pitchDate.toDate();
+						tempSet.set(elemDate.toDateString(), elemDate);
+					});
+					setDateMap(tempSet);
 				}
 			);
+
 			setIsLoading(false);
 			return () => unsubscribe();
 		} else {
@@ -99,8 +119,34 @@ export default function PitcherSummary() {
 			<div className="sticky min-w-[300px] border-r min-h-screen items-start">
 				<div className="flex flex-col gap-2 p-4 items-start">
 					<PitcherSelecter setSelectedPitcherName={setSelectedPitcherName} />
-					<DatePicker date={selectedDate} setDate={setSelectedDate} />
-					<Button onClick={() => setSelectedDate(null)}>
+					<Select
+						value={dateSelectValue}
+						onValueChange={(value: string) => {
+							const newDate: Date | null = dateMap?.get(value) ?? null;
+							setSelectedDate(newDate);
+							setDateSelectValue(value);
+						}}
+					>
+						<SelectTrigger className="w-[180px]">
+							<SelectValue placeholder="Select a date..." />
+						</SelectTrigger>
+						<SelectContent>
+							{dateMap &&
+								Array.from(dateMap.keys()).map((dateString: string) => (
+									<SelectItem
+										key={dateString}
+										value={dateString}
+									>{`${dateString}`}</SelectItem>
+								))}
+						</SelectContent>
+					</Select>
+					{/* <DatePicker date={selectedDate} setDate={setSelectedDate} /> */}
+					<Button
+						onClick={() => {
+							setSelectedDate(null);
+							setDateSelectValue("");
+						}}
+					>
 						Get All Pitches
 					</Button>
 					<SplitsData pitchData={pitchData} />
