@@ -1,4 +1,6 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Welcome to the Macalester Pitch Tracking Web App
+
+My name is Camden Scholl. I'm a CS major and pitcher at Macalester College. I created this app to improve the quality and efficiency of our pitch tracking and statistical analysis. 
 
 ## Viewing the website
 
