@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { FullPitchData, getFullPitchDataColumns } from "./SummaryColumns";
 import FullDataTable from "@/components/FullDataTable";
 import { db } from "@/firebase/clientApp";
@@ -30,13 +30,21 @@ export default function PitcherSummary() {
 	const [selectedDate, setSelectedDate] = useState<Date | null>(null);
 	const [dateMap, setDateMap] = useState<Map<string, Date> | null>(null);
 	const [dateSelectValue, setDateSelectValue] = useState<string>("");
+	const [isDateSortedAsc, setIsDateSortedAsc] = useState<boolean>(false);
 
 	const [isChanging, setIsChanging] = useState<boolean>(false);
 	const [selectedPitch, setSelectedPitch] = useState<FullPitchData | null>(
 		null
 	);
 
-	const onDelete = async (pitch: FullPitchData) => {
+	const onOpenChange = useCallback((value: boolean) => {
+		setIsChanging(false);
+		if (!value) {
+			setSelectedPitch(null);
+		}
+	}, []);
+
+	const onDelete = useCallback(async (pitch: FullPitchData) => {
 		setIsLoading(true);
 		onOpenChange(false);
 		try {
@@ -56,21 +64,14 @@ export default function PitcherSummary() {
 			});
 		}
 		setIsLoading(false);
-	};
+	}, [onOpenChange, toast]);
 	// TODO: maybe change on edit to only take pitch type
 	const onEdit = (pitch: FullPitchData) => {
 		setSelectedPitch(pitch);
 		setIsChanging(true);
 	};
 
-	const onOpenChange = (value: boolean) => {
-		setIsChanging(false);
-		if (!value) {
-			setSelectedPitch(null);
-		}
-	};
-
-	const columns = getFullPitchDataColumns({ onEdit, onDelete });
+	const columns = getFullPitchDataColumns({ onEdit, onDelete, isDateSortedAsc, setIsDateSortedAsc });
 
 	useEffect(() => {
 		setSelectedDate(null);

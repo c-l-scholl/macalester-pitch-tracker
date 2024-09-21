@@ -5,6 +5,7 @@ import { ArrowUpDown } from "lucide-react";
 import DataTableRowActions from "@/components/DataTableRowActions";
 import { Timestamp } from "firebase/firestore";
 import { Button } from "@/components/ui/button";
+import { Dispatch, SetStateAction } from "react";
 
 export type FullPitchData = {
 	id: string;
@@ -19,11 +20,15 @@ export type FullPitchData = {
 interface FullPitchDataColumnsProps {
 	onEdit: (pitch: FullPitchData) => void;
 	onDelete: (pitch: FullPitchData) => void;
+	isDateSortedAsc: boolean;
+	setIsDateSortedAsc: Dispatch<SetStateAction<boolean>>;
 }
 
 export const getFullPitchDataColumns = ({
 	onEdit,
 	onDelete,
+	isDateSortedAsc,
+	setIsDateSortedAsc,
 }: FullPitchDataColumnsProps): ColumnDef<FullPitchData>[] => [
 	{
 		accessorKey: "fullName",
@@ -35,7 +40,11 @@ export const getFullPitchDataColumns = ({
 			return (
 				<Button
 					variant="ghost"
-					onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
+					onClick={() => {
+							setIsDateSortedAsc(column.getIsSorted() === "asc");
+							column.toggleSorting(isDateSortedAsc);
+							console.log(isDateSortedAsc);
+						}}>
 						Date
 						<ArrowUpDown className="ml-2 h-4 w-4"/>
 				</Button>
