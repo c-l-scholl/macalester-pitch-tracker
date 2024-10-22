@@ -107,8 +107,8 @@ const calculateSLG = (stats: FullPitchData[]): string => {
 	const rSLG: number = rABs > 0 ? (1000 * rHits / rABs) : 0;
 	const lSLG: number = lABs > 0 ? (1000 * lHits / lABs) : 0;
 
-	let rSLGStr: string = formatSLG(rSLG);
-	let lSLGStr: string = formatSLG(lSLG);
+	let rSLGStr: string = rABs > 0 ? formatSLG(rSLG) : "none";
+	let lSLGStr: string = lABs > 0 ? formatSLG(lSLG) : "none";
 
 	return `${lSLGStr} / ${rSLGStr}`;
 }
@@ -120,10 +120,7 @@ const formatSLG = (slg: number): string => {
 	}
 	slg /= 1000;
 	let slgStr: string = String(slg.toFixed(3));
-	if (slg >= 1) {
-		return slgStr;
-	}
-	return `${slgStr}`
+	return slgStr;
 }
 
 interface SplitsCardProps {

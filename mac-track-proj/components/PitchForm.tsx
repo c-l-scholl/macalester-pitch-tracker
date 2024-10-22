@@ -27,7 +27,7 @@ const formSchema = z.object({
 	}),
 	velocity: z.number({
 		required_error: "You need to enter a velocity.",
-	}),
+	}).multipleOf(0.1).min(50).max(110),
 	pitchType: z.enum(["FB", "2S", "CH", "SL", "CB", "Other"], {
 		required_error: "You need to select a pitch type.",
 	}),
@@ -82,6 +82,17 @@ export const PitchForm = ({
 
 	// 2. Define a submit handler.
 	const onSubmit = async (values: z.infer<typeof formSchema>) => {
+
+		if (!selectedPitcherName) {
+			toast({
+				title: "Uh oh! It looks like you forgot to select a pitcher.",
+				description:
+					"Please make sure to select a pitcher.",
+				variant: "destructive",
+			});
+			return;
+		}
+
 		const pitchesCollRef = collection(db, "pitches");
 		setIsLoading(true);
 		if (!isChanging) {
@@ -135,14 +146,10 @@ export const PitchForm = ({
 		}
 		setIsLoading(false);
 		onOpenChange(false);
-
-		// could change this later for better efficiency
-		// need to call here because of async
-		// form.reset();
 		form.resetField("pitchType", { defaultValue: "FB" });
 		form.resetField("velocity", { defaultValue: 50 });
 		form.resetField("contact", { defaultValue: "Ball" });
-	}
+	};
 
 	return (
 		<div className="flex flex-col">
@@ -175,26 +182,6 @@ export const PitchForm = ({
 											<FormLabel className="font-normal">Left-Handed</FormLabel>
 										</FormItem>
 									</RadioGroup>
-								</FormControl>
-								<FormMessage />
-							</FormItem>
-						)}
-					/>
-					<FormField
-						control={form.control}
-						name="velocity"
-						render={({ field }) => (
-							<FormItem>
-								<FormLabel>Velocity</FormLabel>
-								<FormControl>
-									<Input
-										type="number"
-										min={50}
-										max={110}
-										placeholder="In mph"
-										{...field}
-										onChange={(event) => field.onChange(+event.target.value)}
-									/>
 								</FormControl>
 								<FormMessage />
 							</FormItem>
@@ -253,6 +240,25 @@ export const PitchForm = ({
 											</FormItem>
 										</div>
 									</RadioGroup>
+								</FormControl>
+								<FormMessage />
+							</FormItem>
+						)}
+					/>
+					<FormField
+						control={form.control}
+						name="velocity"
+						render={({ field }) => (
+							<FormItem>
+								<FormLabel>Velocity</FormLabel>
+								<FormControl>
+									<Input
+										type="number"
+										step=".1"
+										placeholder="In mph"
+										{...field}
+										onChange={(event) => field.onChange(Number(event.target.value))}
+									/>
 								</FormControl>
 								<FormMessage />
 							</FormItem>
