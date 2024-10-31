@@ -39,6 +39,7 @@ const PitchTracker = () => {
 				variant: "destructive",
 			});
 		}
+		setIsTrackerLoading(false);
 	};
 
 	const onEdit = (pitch: Pitch) => {
